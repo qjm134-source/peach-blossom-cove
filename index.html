@@ -1,0 +1,2678 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>幻境漫游 WonderRealm</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #1a1a3e;
+      --bg-card: rgba(17,24,39,0.85);
+      --accent: #f59e0b;
+      --accent2: #06b6d4;
+      --text: #e8ecf4;
+      --text-muted: #8892a8;
+      --border: rgba(255,255,255,0.1);
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg-primary); color: var(--text); }
+
+    #app { width: 100%; height: 100%; position: relative; }
+    .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; opacity: 0; transition: opacity 0.3s ease; }
+    .page.active { display: flex; opacity: 1; }
+
+    /* 角色创建页 */
+    #create-character { 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: flex-start; 
+      background: transparent; 
+      position: relative;
+      overflow: hidden;
+      padding: 40px 20px 60px;
+    }
+
+    #create-character::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('assets/background/bg_create_character.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 1;
+      z-index: 0;
+    }
+
+    .create-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: none;
+      border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+    }
+
+    .bg-cloud {
+      position: absolute;
+      opacity: 1;
+    }
+    .bg-cloud-1 {
+      top: 15%;
+      left: 10%;
+      width: 200px;
+      animation: cloudMove1 30s linear infinite;
+    }
+    .bg-cloud-2 {
+      top: 25%;
+      right: 15%;
+      width: 180px;
+      animation: cloudMove2 40s linear infinite;
+    }
+    .bg-cloud-3 {
+      top: 40%;
+      left: 40%;
+      width: 150px;
+      animation: cloudMove3 50s linear infinite;
+    }
+
+    @keyframes cloudMove1 {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(100px); }
+    }
+    @keyframes cloudMove2 {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-80px); }
+    }
+    @keyframes cloudMove3 {
+      0% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(50px) translateY(-20px); }
+      100% { transform: translateX(0) translateY(0); }
+    }
+
+    .create-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .deco-lantern {
+      width: 50px;
+      animation: lanternSwing 4s ease-in-out infinite;
+    }
+    .deco-lantern-left {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+    .deco-lantern-right {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      animation-delay: 2s;
+    }
+
+    @keyframes lanternSwing {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    .deco-flower {
+      position: absolute;
+      width: 40px;
+      animation: flowerFloat 6s ease-in-out infinite;
+    }
+    .deco-flower-1 {
+      bottom: 150px;
+      left: 30px;
+    }
+    .deco-flower-2 {
+      bottom: 200px;
+      right: 30px;
+      animation-delay: 3s;
+    }
+
+    @keyframes flowerFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(10deg); }
+    }
+
+    .create-header {
+      text-align: center;
+      margin-bottom: 40px;
+      z-index: 2;
+      position: relative;
+    }
+    .create-header h1 { 
+      font-size: 3.5rem; 
+      font-weight: 700; 
+      color: #ffd700; 
+      margin-bottom: 8px; 
+      text-shadow: 0 0 30px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.3);
+      font-family: 'STKaiti', 'KaiTi', serif;
+      letter-spacing: 12px;
+    }
+    .create-header p { 
+      font-size: 1.1rem; 
+      color: rgba(255,255,255,0.8);
+      letter-spacing: 6px;
+    }
+
+    .create-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      width: 100%;
+      padding: 0 30px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .character-section {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .section-title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .title-ribbon {
+      background: linear-gradient(90deg, #8b4513 0%, #d4a574 30%, #ffd700 50%, #d4a574 70%, #8b4513 100%);
+      padding: 8px 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+      position: relative;
+    }
+    .title-ribbon::before,
+    .title-ribbon::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      background: #ffd700;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255,215,0,0.5);
+    }
+    .title-ribbon::before { left: -8px; }
+    .title-ribbon::after { right: -8px; }
+    .title-text {
+      font-size: 1.2rem;
+      color: #78350f;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .character-container {
+      background: linear-gradient(180deg, rgba(254,243,199,0.9) 0%, rgba(253,230,138,0.85) 100%);
+      border: 3px solid #d4a574;
+      border-radius: 20px;
+      padding: 30px 20px;
+      box-shadow: 
+        0 0 30px rgba(255,215,0,0.2),
+        inset 0 0 60px rgba(255,215,0,0.1);
+      position: relative;
+    }
+    .character-container::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px solid #8b4513;
+      border-radius: 25px;
+      pointer-events: none;
+    }
+    .container-corner {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border: 3px solid #8b4513;
+    }
+    .container-corner.top-left { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+    .container-corner.top-right { top: 5px; right: 5px; border-left: none; border-bottom: none; }
+    .container-corner.bottom-left { bottom: 5px; left: 5px; border-right: none; border-top: none; }
+    .container-corner.bottom-right { bottom: 5px; right: 5px; border-left: none; border-top: none; }
+
+    .character-cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .character-card {
+      position: relative;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 15px 10px 10px;
+      border-radius: 12px;
+      background: transparent;
+      border: none;
+    }
+    .character-card::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background-image: url('assets/decorations/border_gold.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 16px;
+      opacity: 1;
+      pointer-events: none;
+      z-index: -1;
+      transition: all 0.3s ease;
+    }
+    .character-card:hover::before {
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+    .character-card:hover {
+      transform: translateY(-8px);
+    }
+    .character-card.selected::before {
+      opacity: 1;
+      box-shadow: 0 0 25px rgba(255,215,0,0.5);
+    }
+    .character-card.selected {
+      background: rgba(255,215,0,0.1);
+    }
+
+    .character-image {
+      width: 90px;
+      height: 150px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    }
+    .character-card.selected .character-image {
+      animation: characterBreath 2s ease-in-out infinite;
+      filter: drop-shadow(0 4px 15px rgba(255,215,0,0.5));
+    }
+
+    @keyframes characterBreath {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .character-name {
+      font-size: 0.95rem;
+      color: #78350f;
+      margin-top: 12px;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+
+    .character-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-top: 8px;
+      opacity: 1;
+      transition: all 0.3s;
+      border: 2px solid rgba(255,255,255,0.8);
+    }
+    .character-card.selected .character-indicator {
+      opacity: 1;
+      box-shadow: 0 0 15px currentColor;
+      animation: pulse 2s infinite;
+    }
+    .character-indicator[data-color="#60a5fa"] { background: #60a5fa; color: #60a5fa; }
+    .character-indicator[data-color="#f472b6"] { background: #f472b6; color: #f472b6; }
+    .character-indicator[data-color="#e5e7eb"] { background: #e5e7eb; color: #e5e7eb; }
+
+    .name-input-wrap {
+      position: relative;
+      z-index: 2;
+      margin-top: 25px;
+      width: 100%;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .input-decoration {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+    }
+
+    .name-input {
+      width: 100%;
+      height: 55px;
+      padding: 0 55px 0 55px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.9);
+      border: 2px solid #d4a574;
+      color: #78350f;
+      font-size: 1.1rem;
+      outline: none;
+      transition: all 0.3s;
+      text-align: center;
+      font-family: 'STKaiti', 'KaiTi', serif;
+    }
+    .name-input:focus { 
+      border-color: #ffd700; 
+      background: #fff;
+      box-shadow: 0 0 25px rgba(255,215,0,0.3);
+    }
+    .name-input::placeholder { color: rgba(120,53,15,0.4); }
+
+    .input-clear {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(120,53,15,0.5);
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .input-clear:hover { color: #78350f; }
+
+    .create-sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: -80px;
+      flex-shrink: 0;
+      width: 140px;
+    }
+
+    .social-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,215,0,0.2);
+      flex: 1;
+      min-height: 0;
+    }
+
+    .preview-title {
+      font-size: 0.85rem;
+      color: #ffd700;
+      margin-bottom: 15px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,215,0,0.3);
+      width: 100%;
+      text-align: center;
+    }
+
+    .preview-icons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      padding: 5px;
+      position: relative;
+    }
+    .preview-icon-wrap {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview-icon-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(212,165,116,0.3) 50%, rgba(139,69,19,0.2) 100%);
+      border: 2px solid rgba(255,215,0,0.4);
+      z-index: -1;
+      transition: all 0.3s;
+    }
+    .preview-item:hover .preview-icon-wrap::before {
+      transform: scale(1.1);
+      border-color: rgba(255,215,0,0.8);
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+    .preview-item:hover { 
+      transform: translateY(-3px); 
+    }
+    .preview-item img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .preview-item span {
+      font-size: 0.9rem;
+      color: #8b4513;
+      font-weight: 600;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+
+    .enter-btn-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .enter-btn {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd700 0%, #f59e0b 40%, #d97706 100%);
+      border: 4px solid #ffd700;
+      color: #78350f;
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      overflow: hidden;
+      z-index: 2;
+      letter-spacing: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 0 30px rgba(255,215,0,0.4),
+        0 0 60px rgba(255,215,0,0.2),
+        inset 0 0 30px rgba(255,255,255,0.3);
+    }
+    .enter-btn:hover { 
+      transform: scale(1.08); 
+      box-shadow: 
+        0 0 40px rgba(255,215,0,0.6),
+        0 0 80px rgba(255,215,0,0.3),
+        inset 0 0 30px rgba(255,255,255,0.4);
+    }
+    .enter-btn:active { transform: scale(1.02); }
+
+    .btn-text-line {
+      display: block;
+      line-height: 1.3;
+    }
+
+    .btn-glow {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 50%);
+      animation: btnGlow 3s infinite;
+    }
+
+    @keyframes btnGlow {
+      0% { transform: scale(0.5); opacity: 0.5; }
+      50% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(0.5); opacity: 0.5; }
+    }
+
+    .hint-text { 
+      font-size: 0.85rem; 
+      color: rgba(255,255,255,0.6); 
+      margin-top: 15px;
+      z-index: 2;
+      position: relative;
+      letter-spacing: 2px;
+    }
+
+    .transition-preview {
+      position: relative;
+      z-index: 2;
+      margin-top: 35px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .transition-title {
+      font-size: 0.9rem;
+      color: #ffd700;
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: 600;
+      letter-spacing: 3px;
+    }
+
+    .transition-grid {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .transition-item {
+      width: 140px;
+      height: 180px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,215,0,0.3);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .transition-item:hover {
+      transform: translateY(-5px);
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255,215,0,0.3);
+    }
+
+    .transition-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .transition-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: #fff;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* 主场景 */
+    #world-page { flex-direction: column; background: #0a0e1a; }
+    #game-canvas { flex: 1; width: 100%; height: 100%; }
+    
+    .game-ui { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 20px 80px; }
+    .chat-input-wrap { display: flex; gap: 10px; }
+    .chat-input { flex: 1; height: 44px; padding: 0 20px; border-radius: 22px; background: rgba(17,24,39,0.9); border: 1px solid var(--border); color: var(--text); font-size: 1rem; outline: none; }
+    .chat-input:focus { border-color: var(--accent); }
+    .send-btn { width: 80px; height: 44px; border-radius: 22px; background: var(--accent); border: none; color: #fff; font-size: 0.9rem; cursor: pointer; }
+
+    .guide-tip { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; background: rgba(17,24,39,0.9); border: 1px solid var(--border); font-size: 0.9rem; color: var(--text); animation: fadeInOut 5s ease forwards; pointer-events: none; }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* 导航栏 */
+    .navbar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(10,14,26,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .nav-items { display: flex; align-items: center; gap: 20px; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; height: 60px; cursor: pointer; transition: all 0.3s; border-radius: 12px; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); }
+    .nav-item.active { color: var(--accent); }
+    .nav-icon { font-size: 1.5rem; margin-bottom: 4px; }
+    .nav-label { font-size: 0.7rem; }
+
+    .online-indicator { position: absolute; right: 20px; display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 20px; background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.3); }
+    .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+    .online-text { font-size: 0.85rem; color: var(--success); }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* 通用页面容器 */
+    .page-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 90px; }
+    .page-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 20px; }
+
+    /* 卡片样式 */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; transition: all 0.3s; }
+    .card:hover { border-color: var(--accent); }
+    .card-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 10px; }
+    .card-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
+    .card-meta { display: flex; align-items: center; gap: 15px; }
+    .meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: var(--text-muted); }
+
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.9rem; font-weight: 600; }
+    .tag-active { background: rgba(16,185,129,0.2); color: var(--success); }
+    .tag-book { background: rgba(245,158,11,0.2); color: var(--accent); }
+    .tag-hot { background: rgba(239,68,68,0.2); color: var(--error); }
+    .tag-new { background: rgba(6,182,212,0.2); color: var(--accent2); }
+    .tag-rare { background: rgba(167,139,250,0.2); color: #a78bfa; }
+
+    /* 按钮样式 */
+    .btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+    /* 活动页 */
+    #activities-page { flex-direction: column; background: var(--bg-primary); }
+    .activity-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    
+    /* 诗词飞花令 */
+    .poem-game { display: none; }
+    .poem-game.active { display: block; }
+    .poem-keyword { font-size: 4rem; font-weight: 700; color: var(--accent); text-align: center; margin: 30px 0; font-family: 'STKaiti', 'KaiTi', serif; text-shadow: 0 0 30px rgba(245,158,11,0.3); }
+    .poem-scroll { background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 30px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .poem-text { font-size: 1.5rem; color: #78350f; text-align: center; font-family: 'STKaiti', 'KaiTi', serif; }
+    .poem-options { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+    .poem-option { padding: 15px; border-radius: 10px; background: var(--bg-card); border: 2px solid var(--border); color: var(--text); font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+    .poem-option:hover { border-color: var(--accent); }
+    .poem-option.selected { border-color: var(--accent); background: rgba(245,158,11,0.1); }
+    .poem-option.correct { border-color: var(--success); background: rgba(16,185,129,0.1); }
+    .poem-option.wrong { border-color: var(--error); background: rgba(239,68,68,0.1); }
+    .poem-score { text-align: center; font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; }
+    .poem-players { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+    .player-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; color: #fff; }
+    .player-avatar.me { border: 2px solid var(--accent); }
+    .poem-feedback { text-align: center; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .poem-feedback.success { background: rgba(16,185,129,0.2); color: var(--success); }
+    .poem-feedback.error { background: rgba(239,68,68,0.2); color: var(--error); }
+    .confetti { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 9999; }
+    .confetti-piece { position: absolute; width: 10px; height: 10px; border-radius: 50%; animation: fall 3s linear forwards; }
+    @keyframes fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+    /* 婚礼宴请 */
+    .wedding-scene { display: none; }
+    .wedding-scene.active { display: block; }
+    #wedding-canvas { width: 100%; height: 400px; border-radius: 16px; background: linear-gradient(180deg, #1a0a0a 0%, #2d1010 100%); margin-bottom: 20px; }
+    .wedding-controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+    .wedding-btn { padding: 12px 28px; border-radius: 24px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-redpacket { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #fff; border: none; }
+    .btn-fireworks { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: #fff; border: none; }
+    .wedding-guests { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .guest-item { padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.1); font-size: 0.85rem; color: var(--text); }
+
+    /* 集市页 */
+    #market-page { flex-direction: column; background: var(--bg-primary); }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+    .item-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s; }
+    .item-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .item-color { width: 60px; height: 60px; border-radius: 8px; margin-bottom: 10px; }
+    .item-name { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 5px; }
+    .item-price { font-size: 1rem; color: var(--accent); font-weight: 600; margin-bottom: 10px; }
+    .item-price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+    .item-owned { padding: 3px 8px; border-radius: 4px; background: rgba(16,185,129,0.2); color: var(--success); font-size: 0.7rem; }
+
+    .market-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .spirit-stones { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: rgba(245,158,11,0.2); color: var(--accent); font-weight: 600; }
+
+    /* 坊间动态 */
+    .dynamic-bar { background: var(--bg-card); border-top: 1px solid var(--border); padding: 12px 20px; position: fixed; bottom: 70px; left: 0; right: 0; overflow: hidden; }
+    .dynamic-text { white-space: nowrap; animation: scrollLeft 15s linear infinite; font-size: 0.85rem; color: var(--text-muted); }
+    @keyframes scrollLeft { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+    /* 我页面 */
+    #profile-page { flex-direction: column; background: var(--bg-primary); }
+    .profile-header { text-align: center; padding: 30px 20px; }
+    .profile-avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; }
+    .profile-name { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .profile-stones { font-size: 1.2rem; color: var(--accent); font-weight: 600; }
+
+    .owned-items { margin-bottom: 30px; }
+    .items-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .owned-item { aspect-ratio: 1; border-radius: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+    .owned-item:hover { transform: scale(1.1); }
+    .owned-item.equipped { border-color: var(--accent); box-shadow: 0 0 15px rgba(245,158,11,0.3); }
+
+    .social-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+    .social-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; margin-bottom: 20px; }
+    .stat-item .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); display: block; }
+    .stat-item .label { font-size: 0.9rem; color: var(--text-muted); }
+
+    .share-btn { width: 100%; height: 48px; border-radius: 24px; background: var(--accent2); color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; }
+
+    /* 弹窗 */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; width: 90%; max-width: 360px; animation: modalIn 0.3s ease; }
+    @keyframes modalIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 15px; }
+    .modal-body { font-size: 0.95rem; color: var(--text); margin-bottom: 20px; }
+    .modal-price { font-size: 1.3rem; color: var(--accent); font-weight: 600; margin-bottom: 20px; }
+    .modal-buttons { display: flex; gap: 12px; }
+    .modal-btn { flex: 1; height: 44px; border-radius: 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; }
+    .modal-btn.confirm { background: var(--accent); color: #fff; }
+    .modal-btn.cancel { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    /* NPC对话框 */
+    .npc-dialog { position: absolute; background: rgba(255,255,255,0.95); border-radius: 12px; padding: 15px 20px; max-width: 250px; z-index: 100; animation: dialogIn 0.3s ease; }
+    .npc-dialog::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid rgba(255,255,255,0.95); }
+    .npc-dialog .name { font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
+    .npc-dialog .text { font-size: 0.85rem; color: #333; line-height: 1.5; }
+    @keyframes dialogIn { 0% { opacity: 0; transform: translateY(-10px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+
+    /* 红包动画 */
+    .redpacket { position: absolute; width: 40px; height: 50px; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); border-radius: 6px; animation: flyToCenter 1s ease forwards; z-index: 1000; }
+    @keyframes flyToCenter { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; } }
+
+    /* 烟花粒子 */
+    .firework { position: fixed; width: 6px; height: 6px; border-radius: 50%; animation: explode 1s ease forwards; z-index: 9999; pointer-events: none; }
+    @keyframes explode { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+
+    /* 聊天气泡 */
+    .chat-bubble { position: absolute; background: rgba(255,255,255,0.95); border-radius: 8px; padding: 8px 12px; font-size: 0.8rem; color: #333; max-width: 150px; animation: bubbleIn 0.3s ease; }
+    .chat-bubble::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid rgba(255,255,255,0.95); }
+    @keyframes bubbleIn { 0% { opacity: 0; transform: scale(0.8) translateY(-5px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+    /* 系统提示 */
+    .system-toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 24px; background: rgba(17,24,39,0.95); border: 1px solid var(--accent); color: var(--accent); font-size: 0.9rem; z-index: 9999; animation: toastIn 0.3s ease; }
+    @keyframes toastIn { 0% { opacity: 0; transform: translateX(-50%) translateY(-20px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      :root {
+        --font-size-base: 14px;
+      }
+      
+      html, body {
+        font-size: 14px;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      #create-character { padding: 30px 15px 50px; }
+      .create-header h1 { font-size: 2rem; letter-spacing: 4px; }
+      .create-header p { font-size: 0.9rem; }
+      
+      .create-main { flex-direction: column; gap: 25px; }
+      .character-section { max-width: 100%; }
+      .character-card { width: 95px; padding: 10px; }
+      .character-image { width: 65px; height: 105px; }
+      .character-name { font-size: 0.8rem; }
+      
+      .deco-lantern { width: 40px; }
+      .deco-flower { width: 30px; }
+      
+      .name-input-wrap { width: 260px; }
+      .name-input { height: 48px; font-size: 0.95rem; }
+      .enter-btn { width: 100px; height: 100px; font-size: 1.2rem; }
+      .hint-text { font-size: 0.8rem; }
+      
+      .transition-preview { display: none; }
+      
+      .game-ui { padding: 10px 15px 150px; }
+      .chat-input { height: 42px; font-size: 0.9rem; padding: 0 15px; }
+      .send-btn { width: 70px; height: 42px; font-size: 0.85rem; }
+
+      .navbar { height: 65px; padding-bottom: env(safe-area-inset-bottom); }
+      .nav-items { gap: 8px; }
+      .nav-item { width: 65px; height: 55px; }
+      .nav-icon { font-size: 1.4rem; }
+      .nav-label { font-size: 0.65rem; }
+      .online-indicator { right: 12px; padding: 4px 10px; }
+      .online-text { font-size: 0.9rem; }
+
+      .page-content { padding: 15px; padding-bottom: 100px; }
+      .page-title { font-size: 1.3rem; margin-bottom: 15px; }
+
+      .card { padding: 15px; margin-bottom: 15px; }
+      .card-title { font-size: 1rem; }
+      .card-desc { font-size: 0.85rem; margin-bottom: 12px; }
+      .btn { padding: 8px 20px; font-size: 0.85rem; }
+
+      .poem-keyword { font-size: 2.5rem; margin: 20px 0; }
+      .poem-scroll { padding: 20px; margin-bottom: 15px; }
+      .poem-text { font-size: 1.1rem; }
+      .poem-option { padding: 12px; font-size: 0.9rem; }
+      .poem-score { font-size: 1.1rem; margin-bottom: 15px; }
+      .player-avatar { width: 35px; height: 35px; font-size: 0.7rem; }
+
+      .wedding-controls { gap: 10px; }
+      .wedding-btn { padding: 10px 20px; font-size: 0.9rem; }
+
+      .items-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .item-card { padding: 12px; }
+      .item-color { width: 50px; height: 50px; }
+      .item-name { font-size: 0.9rem; }
+      .item-price { font-size: 0.95rem; }
+
+      .market-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+
+      .profile-header { padding: 20px 15px; }
+      .profile-avatar { width: 80px; height: 80px; margin-bottom: 10px; }
+      .profile-name { font-size: 1.3rem; }
+      .profile-stones { font-size: 1.1rem; }
+
+      .items-list { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+      .owned-item { border-radius: 10px; }
+
+      .social-stats { gap: 10px; }
+      .stat-item .num { font-size: 1.3rem; }
+      .stat-item .label { font-size: 0.7rem; }
+
+      .share-btn { height: 44px; font-size: 0.95rem; }
+
+      .modal-content { padding: 20px; width: 85%; max-width: 320px; }
+      .modal-title { font-size: 1.1rem; }
+      .modal-body { font-size: 0.9rem; }
+      .modal-btn { height: 40px; font-size: 0.9rem; }
+
+      .npc-dialog { max-width: 220px; padding: 12px 16px; }
+      .npc-dialog .name { font-size: 0.85rem; }
+      .npc-dialog .text { font-size: 0.8rem; }
+
+      .chat-bubble { max-width: 120px; padding: 6px 10px; font-size: 0.9rem; }
+
+      .guide-tip { padding: 10px 20px; font-size: 0.85rem; top: 15px; }
+    }
+
+    @media (max-width: 480px) {
+      .create-header h1 { font-size: 1.6rem; }
+      .character-card { width: 80px; padding: 8px; }
+      .character-image { width: 55px; height: 90px; }
+      .name-input-wrap, .enter-btn { width: 220px; }
+      .poem-keyword { font-size: 2rem; }
+      .poem-text { font-size: 1rem; }
+      .items-list { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* 虚拟摇杆 */
+    .joystick-container {
+      position: fixed;
+      bottom: 160px;
+      left: 20px;
+      width: 100px;
+      height: 100px;
+      z-index: 900;
+      display: none;
+    }
+    
+    .joystick-base {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    .joystick-knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 45px;
+      height: 45px;
+      background: rgba(245, 158, 11, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+      touch-action: none;
+    }
+
+    @media (max-width: 768px) {
+      .joystick-container { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 角色创建页 -->
+    <div id="create-character" class="page active">
+      <div class="create-bg">
+        <div class="bg-gradient"></div>
+        <svg class="bg-cloud bg-cloud-1" viewBox="0 0 100 60"><ellipse cx="30" cy="40" rx="25" ry="15" fill="rgba(255,255,255,0.3)"/><ellipse cx="55" cy="35" rx="30" ry="20" fill="rgba(255,255,255,0.4)"/><ellipse cx="80" cy="40" rx="20" ry="12" fill="rgba(255,255,255,0.25)"/></svg>
+        <svg class="bg-cloud bg-cloud-2" viewBox="0 0 100 60"><ellipse cx="25" cy="35" rx="22" ry="14" fill="rgba(255,255,255,0.25)"/><ellipse cx="50" cy="30" rx="28" ry="18" fill="rgba(255,255,255,0.35)"/><ellipse cx="75" cy="35" rx="18" ry="11" fill="rgba(255,255,255,0.2)"/></svg>
+        <svg class="bg-cloud bg-cloud-3" viewBox="0 0 100 60"><ellipse cx="35" cy="42" rx="28" ry="16" fill="rgba(255,255,255,0.2)"/><ellipse cx="60" cy="38" rx="32" ry="22" fill="rgba(255,255,255,0.3)"/><ellipse cx="85" cy="42" rx="22" ry="13" fill="rgba(255,255,255,0.15)"/></svg>
+      </div>
+
+      <div class="create-decoration">
+        <svg class="deco-flower deco-flower-1" viewBox="0 0 50 50"><ellipse cx="25" cy="15" rx="8" ry="12" fill="#ffb6c1" transform="rotate(-20 25 25)"/><ellipse cx="25" cy="15" rx="8" ry="12" fill="#ffb6c1" transform="rotate(20 25 25)"/><ellipse cx="35" cy="22" rx="8" ry="12" fill="#ff69b4" transform="rotate(45 25 25)"/><ellipse cx="35" cy="22" rx="8" ry="12" fill="#ff69b4" transform="rotate(70 25 25)"/><ellipse cx="15" cy="22" rx="8" ry="12" fill="#ffc0cb" transform="rotate(-45 25 25)"/><ellipse cx="15" cy="22" rx="8" ry="12" fill="#ffc0cb" transform="rotate(-70 25 25)"/><circle cx="25" cy="25" r="6" fill="#ffd700"/><path d="M25,35 L22,48 M25,35 L28,48" stroke="#228b22" stroke-width="2"/></svg>
+        <svg class="deco-flower deco-flower-2" viewBox="0 0 50 50"><ellipse cx="25" cy="15" rx="8" ry="12" fill="#ffe4e1" transform="rotate(-20 25 25)"/><ellipse cx="25" cy="15" rx="8" ry="12" fill="#ffe4e1" transform="rotate(20 25 25)"/><ellipse cx="35" cy="22" rx="8" ry="12" fill="#ffb6c1" transform="rotate(45 25 25)"/><ellipse cx="35" cy="22" rx="8" ry="12" fill="#ffb6c1" transform="rotate(70 25 25)"/><ellipse cx="15" cy="22" rx="8" ry="12" fill="#ffc0cb" transform="rotate(-45 25 25)"/><ellipse cx="15" cy="22" rx="8" ry="12" fill="#ffc0cb" transform="rotate(-70 25 25)"/><circle cx="25" cy="25" r="6" fill="#ffd700"/><path d="M25,35 L22,48 M25,35 L28,48" stroke="#228b22" stroke-width="2"/></svg>
+      </div>
+
+      <div class="create-header">
+        <h1>幻境漫游</h1>
+        <p>遇见你的仙侠人生</p>
+      </div>
+
+      <div class="create-main">
+        <div class="character-section">
+          <div class="section-title-wrapper">
+            <div class="title-ribbon">
+              <span class="title-text">选择你的角色</span>
+            </div>
+          </div>
+
+          <div class="character-container">
+            <div class="container-corner top-left"></div>
+            <div class="container-corner top-right"></div>
+            <div class="container-corner bottom-left"></div>
+            <div class="container-corner bottom-right"></div>
+
+            <div class="character-cards">
+              <div class="character-card" data-avatar="0">
+                <img class="character-image" src="assets/characters/scholar.png" alt="青衫书生">
+                <div class="character-name">青衫书生</div>
+                <div class="character-indicator" data-color="#60a5fa"></div>
+              </div>
+
+              <div class="character-card" data-avatar="1">
+                <img class="character-image" src="assets/characters/maiden.png" alt="粉衣少女">
+                <div class="character-name">粉衣少女</div>
+                <div class="character-indicator" data-color="#f472b6"></div>
+              </div>
+
+              <div class="character-card" data-avatar="2">
+                <img class="character-image" src="assets/characters/swordsman.png" alt="白衣剑客">
+                <div class="character-name">白衣剑客</div>
+                <div class="character-indicator" data-color="#e5e7eb"></div>
+              </div>
+            </div>
+
+            <div class="name-input-wrap">
+              <div class="input-decoration">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="rgba(120,53,15,0.6)"/></svg>
+              </div>
+              <input type="text" class="name-input" id="player-name" placeholder="请输入角色名称" value="旅人" maxlength="10">
+              <button class="input-clear" id="clear-name">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="create-sidebar">
+          <div class="social-preview">
+            <div class="preview-icons">
+              <div class="preview-item">
+                <div class="preview-icon-wrap">
+                  <img src="assets/icons/fan.png" alt="扇子"/>
+                </div>
+                <span>诗词雅集</span>
+              </div>
+              <div class="preview-item">
+                <div class="preview-icon-wrap">
+                  <img src="assets/icons/wedding.png" alt="婚礼"/>
+                </div>
+                <span>婚礼宴请</span>
+              </div>
+              <div class="preview-item">
+                <div class="preview-icon-wrap">
+                  <img src="assets/icons/festival.png" alt="节日"/>
+                </div>
+                <span>节日庆典</span>
+              </div>
+              <div class="preview-item">
+                <div class="preview-icon-wrap">
+                  <img src="assets/icons/market.png" alt="集市"/>
+                </div>
+                <span>虚拟集市</span>
+              </div>
+            </div>
+          </div>
+          <div class="enter-btn-wrapper">
+            <button class="enter-btn" id="enter-btn">
+              <span class="btn-text-line">进入</span>
+              <span class="btn-text-line">世界</span>
+              <span class="btn-glow"></span>
+            </button>
+            <p class="hint-text">点击开启你的仙侠之旅</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="transition-preview">
+        <div class="transition-title">过渡动画预览</div>
+        <div class="transition-grid">
+          <div class="transition-item">
+            <img class="transition-image" src="assets/previews/preview_scholar.png" alt="青衫书生">
+            <div class="transition-label">青衫书生</div>
+          </div>
+          <div class="transition-item">
+            <img class="transition-image" src="assets/previews/preview_maiden.png" alt="粉衣少女">
+            <div class="transition-label">粉衣少女</div>
+          </div>
+          <div class="transition-item">
+            <img class="transition-image" src="assets/previews/preview_swordsman.png" alt="白衣剑客">
+            <div class="transition-label">白衣剑客</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主场景 -->
+    <div id="world-page" class="page">
+      <canvas id="game-canvas"></canvas>
+      <div class="guide-tip" id="guide-tip">点击地面移动 | 按Enter聊天 | 探索奇幻世界</div>
+      <div class="joystick-container" id="joystick-container">
+        <div class="joystick-base"></div>
+        <div class="joystick-knob" id="joystick-knob"></div>
+      </div>
+      <div class="game-ui">
+        <div class="chat-input-wrap">
+          <input type="text" class="chat-input" id="world-chat" placeholder="按Enter聊天..." maxlength="50">
+          <button class="send-btn" id="send-chat">发送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 活动页 -->
+    <div id="activities-page" class="page">
+      <div class="page-content">
+        <h1 class="page-title">文化活动</h1>
+        
+        <!-- 活动大厅 -->
+        <div id="activity-hall">
+          <div class="activity-grid">
+            <div class="card" id="poem-card">
+              <div class="card-title">诗词飞花令</div>
+              <div class="card-desc">以诗会友，飞花传情。围绕关键字进行诗词接龙，考验你的文学功底！</div>
+              <div class="card-meta">
+                <span class="meta-item"><span class="tag tag-active">进行中</span></span>
+                <span class="meta-item">👥 12人参与</span>
+              </div>
+              <button class="btn btn-primary" style="margin-top: 15px;">参与活动</button>
+            </div>
+            
+            <div class="card" id="wedding-card">
+              <div class="card-title">婚礼宴请</div>
+              <div class="card-desc">见证一场浪漫的中式婚礼，与宾客一同举杯祝福新人。</div>
+              <div class="card-meta">
+                <span class="meta-item"><span class="tag tag-book">进行中</span></span>
+                <span class="meta-item">👥 8位宾客在场</span>
+              </div>
+              <button class="btn btn-primary" style="margin-top: 15px;">参加宴会</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 诗词飞花令游戏 -->
+        <div id="poem-game" class="poem-game">
+          <button class="btn btn-secondary" id="back-to-hall" style="margin-bottom: 20px;">← 返回活动大厅</button>
+          <div class="poem-keyword" id="poem-keyword">月</div>
+          <div class="poem-scroll">
+            <div class="poem-text" id="poem-text">请选择含有关键字的诗句</div>
+          </div>
+          <div class="poem-score">得分: <span id="poem-score">0</span></div>
+          <div class="poem-players" id="poem-players"></div>
+          <div class="poem-options" id="poem-options"></div>
+          <div class="poem-feedback" id="poem-feedback"></div>
+          <button class="btn btn-primary" id="restart-poem" style="display: none; width: 100%;">再来一局</button>
+        </div>
+
+        <!-- 婚礼宴请场景 -->
+        <div id="wedding-scene" class="wedding-scene">
+          <button class="btn btn-secondary" id="back-to-hall2" style="margin-bottom: 20px;">← 返回活动大厅</button>
+          <canvas id="wedding-canvas"></canvas>
+          <div class="wedding-controls">
+            <button class="wedding-btn btn-redpacket" id="send-redpacket">🧧 送红包</button>
+            <button class="wedding-btn btn-fireworks" id="set-fireworks">🎆 放烟花</button>
+          </div>
+          <div class="wedding-guests" id="wedding-guests"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 集市页 -->
+    <div id="market-page" class="page">
+      <div class="page-content">
+        <div class="market-header">
+          <h1 class="page-title">虚拟集市</h1>
+          <div class="spirit-stones">💎 <span id="market-stones">500</span> 灵石</div>
+        </div>
+        <div class="items-grid" id="items-grid"></div>
+      </div>
+      <div class="dynamic-bar">
+        <div class="dynamic-text" id="dynamic-text"></div>
+      </div>
+    </div>
+
+    <!-- 我页面 -->
+    <div id="profile-page" class="page">
+      <div class="page-content">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profile-avatar"></div>
+          <div class="profile-name" id="profile-name">旅人</div>
+          <div class="profile-stones">💎 <span id="profile-stones">500</span> 灵石</div>
+        </div>
+
+        <div class="owned-items">
+          <h2 class="page-title" style="font-size: 1.2rem;">我的装扮</h2>
+          <div class="items-list" id="owned-items-list"></div>
+        </div>
+
+        <div class="social-card">
+          <h2 class="page-title" style="font-size: 1.2rem; margin-bottom: 20px;">社交名片</h2>
+          <div class="social-stats">
+            <div class="stat-item">
+              <span class="num" id="stat-steps">0</span>
+              <span class="label">今日步数</span>
+            </div>
+            <div class="stat-item">
+              <span class="num" id="stat-activities">0</span>
+              <span class="label">参与活动</span>
+            </div>
+            <div class="stat-item">
+              <span class="num" id="stat-items">0</span>
+              <span class="label">拥有物品</span>
+            </div>
+            <div class="stat-item">
+              <span class="num" id="stat-interactions">0</span>
+              <span class="label">社交互动</span>
+            </div>
+          </div>
+          <button class="share-btn" id="share-btn">📸 分享截图</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    
+
+    <!-- 弹窗 -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-title" id="modal-title">商品详情</div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-price" id="modal-price">💎 100 灵石</div>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" id="modal-cancel">取消</button>
+          <button class="modal-btn confirm" id="modal-confirm">购买</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      WORLD_WIDTH: 1000,
+      WORLD_HEIGHT: 800,
+      PLAYER_SPEED: 2,
+      DAY_CYCLE: 60000,
+      SIM_COUNT: 5,
+      SPIRIT_STONES: 500,
+      WS_URL: 'ws://localhost:8080'
+    };
+
+    const SVGS = {
+      cloud: `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="30" cy="40" rx="25" ry="15" fill="rgba(255,255,255,0.4)"/><ellipse cx="55" cy="35" rx="30" ry="20" fill="rgba(255,255,255,0.5)"/><ellipse cx="80" cy="40" rx="20" ry="12" fill="rgba(255,255,255,0.3)"/></svg>`,
+      mountain: `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><path d="M0,150 L0,80 L50,20 L100,70 L150,10 L200,60 L200,150 Z" fill="#4a5568"/><path d="M30,100 L60,50 L90,85 L120,30 L150,70 L180,95" stroke="#718096" stroke-width="2" fill="none"/><rect x="85" y="60" width="30" height="25" fill="#5d4e37"/><path d="M70,60 L100,35 L130,60" fill="#8b4513"/></svg>`,
+      lantern: `<svg viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg"><rect x="25" y="0" width="10" height="15" fill="#8b4513"/><ellipse cx="30" cy="20" rx="18" ry="8" fill="#dc143c"/><rect x="15" y="20" width="30" height="50" fill="#dc143c"/><rect x="12" y="20" width="6" height="50" fill="#ffd700" opacity="0.6"/><rect x="42" y="20" width="6" height="50" fill="#ffd700" opacity="0.6"/><text x="30" y="50" text-anchor="middle" fill="#ffd700" font-size="24" font-weight="bold">囍</text><ellipse cx="30" cy="70" rx="18" ry="8" fill="#dc143c"/><rect x="25" y="78" width="10" height="10" fill="#8b4513"/><circle cx="30" cy="92" r="4" fill="#ffd700"/></svg>`,
+      flower: `<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><ellipse cx="25" cy="15" rx="8" ry="12" fill="#ffb6c1" transform="rotate(-20 25 25)"/><ellipse cx="25" cy="15" rx="8" ry="12" fill="#ffb6c1" transform="rotate(20 25 25)"/><ellipse cx="35" cy="22" rx="8" ry="12" fill="#ff69b4" transform="rotate(45 25 25)"/><ellipse cx="35" cy="22" rx="8" ry="12" fill="#ff69b4" transform="rotate(70 25 25)"/><ellipse cx="15" cy="22" rx="8" ry="12" fill="#ffc0cb" transform="rotate(-45 25 25)"/><ellipse cx="15" cy="22" rx="8" ry="12" fill="#ffc0cb" transform="rotate(-70 25 25)"/><circle cx="25" cy="25" r="6" fill="#ffd700"/><path d="M25,35 L22,48 M25,35 L28,48" stroke="#228b22" stroke-width="2"/></svg>`,
+      fan: `<img src="assets/icons/fan.png" alt="扇子" width="64" height="64"/>`,
+      poem: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="8" width="44" height="48" fill="#fef3c7" stroke="#8b4513" stroke-width="2"/><path d="M16,18 L48,18 M16,28 L48,28 M16,38 L40,38" stroke="#78350f" stroke-width="1.5"/><rect x="8" y="52" width="8" height="8" fill="#8b4513"/></svg>`,
+      wedding: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="28" fill="#dc143c"/><text x="32" y="40" text-anchor="middle" fill="#ffd700" font-size="32" font-weight="bold">囍</text></svg>`,
+      festival: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="0" width="20" height="10" fill="#8b4513"/><rect x="16" y="10" width="32" height="40" rx="4" fill="#ff6b6b"/><text x="32" y="38" text-anchor="middle" fill="#fff" font-size="20">节</text><circle cx="32" cy="55" r="6" fill="#ffd700"/></svg>`,
+      market: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="24" fill="#fbbf24"/><circle cx="32" cy="32" r="20" fill="#f59e0b"/><text x="32" y="38" text-anchor="middle" fill="#78350f" font-size="16" font-weight="bold">市</text><circle cx="16" cy="20" r="4" fill="#fbbf24"/><circle cx="48" cy="20" r="4" fill="#fbbf24"/><circle cx="16" cy="44" r="4" fill="#fbbf24"/><circle cx="48" cy="44" r="4" fill="#fbbf24"/></svg>`,
+      scholar: `<svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="35" rx="18" ry="20" fill="#ffecd2"/><ellipse cx="55" cy="32" rx="4" ry="5" fill="#1a1a1a"/><ellipse cx="65" cy="32" rx="4" ry="5" fill="#1a1a1a"/><path d="M55,42 Q60,46 65,42" stroke="#8b4513" stroke-width="2" fill="none"/><ellipse cx="60" cy="15" rx="15" ry="8" fill="#2d2d2d"/><path d="M45,12 L42,3 L38,5" stroke="#2d2d2d" stroke-width="1.5"/><path d="M75,12 L78,3 L82,5" stroke="#2d2d2d" stroke-width="1.5"/><ellipse cx="60" cy="70" rx="25" ry="35" fill="#60a5fa"/><path d="M35,70 L35,100 Q30,120 35,140 L40,140" stroke="#4b89dc" stroke-width="3" fill="none"/><path d="M85,70 L85,100 Q90,120 85,140 L80,140" stroke="#4b89dc" stroke-width="3" fill="none"/><path d="M45,68 L75,68" stroke="#4b89dc" stroke-width="3"/><path d="M55,72 L65,72" stroke="#fff" stroke-width="1" opacity="0.5"/><rect x="50" y="55" width="20" height="12" rx="3" fill="#8b4513"/><ellipse cx="60" cy="160" rx="12" ry="25" fill="#5d4e37"/><ellipse cx="60" cy="190" rx="8" ry="8" fill="#3d3d3d"/></svg>`,
+      maiden: `<svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="38" rx="16" ry="18" fill="#ffecd2"/><ellipse cx="54" cy="35" rx="3" ry="4" fill="#1a1a1a"/><ellipse cx="66" cy="35" rx="3" ry="4" fill="#1a1a1a"/><path d="M54,44 Q60,48 66,44" stroke="#ff6b8a" stroke-width="2" fill="none"/><ellipse cx="60" cy="12" rx="18" ry="12" fill="#ffc0cb"/><ellipse cx="45" cy="20" rx="12" ry="25" fill="#ffc0cb"/><ellipse cx="75" cy="20" rx="12" ry="25" fill="#ffc0cb"/><path d="M42,25 L38,15" stroke="#ffc0cb" stroke-width="2"/><path d="M78,25 L82,15" stroke="#ffc0cb" stroke-width="2"/><rect x="35" y="60" width="50" height="80" rx="20" fill="#f472b6"/><path d="M40,60 L40,100 Q35,120 40,140" stroke="#ec4899" stroke-width="2" fill="none"/><path d="M80,60 L80,100 Q85,120 80,140" stroke="#ec4899" stroke-width="2" fill="none"/><path d="M45,58 L75,58" stroke="#ec4899" stroke-width="2"/><path d="M50,65 L70,65 M50,75 L70,75" stroke="#fff" stroke-width="1" opacity="0.4"/><circle cx="60" cy="52" r="8" fill="#ffd700"/><ellipse cx="60" cy="155" rx="10" ry="30" fill="#fce7f3"/><ellipse cx="60" cy="190" rx="8" ry="8" fill="#3d3d3d"/></svg>`,
+      swordsman: `<svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="35" rx="18" ry="20" fill="#ffecd2"/><ellipse cx="55" cy="32" rx="4" ry="5" fill="#1a1a1a"/><ellipse cx="65" cy="32" rx="4" ry="5" fill="#1a1a1a"/><path d="M55,42 Q60,46 65,42" stroke="#8b4513" stroke-width="2" fill="none"/><ellipse cx="60" cy="10" rx="20" ry="10" fill="#1a1a1a"/><path d="M40,8 L35,0" stroke="#1a1a1a" stroke-width="1.5"/><path d="M80,8 L85,0" stroke="#1a1a1a" stroke-width="1.5"/><ellipse cx="60" cy="70" rx="22" ry="32" fill="#e5e7eb"/><path d="M38,70 L38,100 Q35,130 40,150 L45,150" stroke="#d1d5db" stroke-width="2" fill="none"/><path d="M82,70 L82,100 Q85,130 80,150 L75,150" stroke="#d1d5db" stroke-width="2" fill="none"/><path d="M45,68 L75,68" stroke="#9ca3af" stroke-width="2"/><rect x="55" y="60" width="10" height="8" fill="#374151"/><rect x="85" y="50" width="4" height="100" fill="#9ca3af"/><ellipse cx="87" cy="45" rx="8" ry="4" fill="#6b7280"/><ellipse cx="60" cy="160" rx="12" ry="25" fill="#374151"/><ellipse cx="60" cy="190" rx="8" ry="8" fill="#1f2937"/></svg>`,
+      border: `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="380" height="280" rx="20" fill="none" stroke="#ffd700" stroke-width="3"/><rect x="18" y="18" width="364" height="264" rx="15" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.5"/><circle cx="30" cy="30" r="8" fill="#ffd700"/><circle cx="370" cy="30" r="8" fill="#ffd700"/><circle cx="30" cy="270" r="8" fill="#ffd700"/><circle cx="370" cy="270" r="8" fill="#ffd700"/><path d="M0,50 Q20,40 30,50" stroke="#ffd700" stroke-width="2" fill="none"/><path d="M370,50 Q380,40 400,50" stroke="#ffd700" stroke-width="2" fill="none"/><path d="M0,250 Q20,260 30,250" stroke="#ffd700" stroke-width="2" fill="none"/><path d="M370,250 Q380,260 400,250" stroke="#ffd700" stroke-width="2" fill="none"/></svg>`,
+      buttonGold: `<svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="290" height="70" rx="35" fill="none" stroke="#ffd700" stroke-width="3"/><rect x="10" y="10" width="280" height="60" rx="30" fill="linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%)"/><circle cx="40" cy="40" r="15" fill="#ffd700" opacity="0.5"/><circle cx="260" cy="40" r="15" fill="#ffd700" opacity="0.5"/></svg>`
+    };
+
+    const AVATARS = [
+      { name: '青衫书生', color: '#60a5fa', icon: '📜', svg: 'scholar' },
+      { name: '粉衣少女', color: '#f472b6', icon: '🌸', svg: 'maiden' },
+      { name: '白衣剑客', color: '#e5e7eb', icon: '⚔️', svg: 'swordsman' }
+    ];
+
+    const SIM_NAMES = ['云游书生', '青莲居士', '月下花影', '清风明月', '墨香琴韵', '山水之间', '竹韵松风', '梅兰竹菊', '星河鹭起', '烟波钓徒'];
+    const SIM_COLORS = ['#a78bfa', '#6ee7b7', '#fbbf24', '#f472b6', '#06b6d4'];
+
+    const SIM_CHATS = ['今日仙山云海真美', '有人一起品茶吗', '刚在集市买了把新折扇', '这瀑布声真悦耳', '海棠花开得正好', '听说诗词比赛开始了', '想去参加婚礼宴请', '这风景令人心旷神怡', '修仙之路漫漫', '与君共赏此美景', '人生得意须尽欢', '花间一壶酒', '月上柳梢头', '清风徐来水波不兴', '采菊东篱下'];
+
+    const ITEMS = [
+      { id: 'hanfu-qing', name: '汉服·青衫', price: 120, tag: '热门', color: '#60a5fa', desc: '淡雅青衫，文人雅士之选' },
+      { id: 'hanfu-pink', name: '汉服·粉黛', price: 150, tag: '新品', color: '#f472b6', desc: '粉嫩罗裙，少女情怀' },
+      { id: 'fan-shan', name: '折扇·山水', price: 80, tag: '热门', color: '#8b5cf6', desc: '山水画卷，清风徐来' },
+      { id: 'hairpin-buyao', name: '发簪·步摇', price: 200, tag: '新品', color: '#fbbf24', desc: '金玉步摇，摇曳生姿' },
+      { id: 'lantern-glow', name: '灯笼·流光', price: 60, tag: '', color: '#f59e0b', desc: '流光溢彩，照亮前程' },
+      { id: 'jade-ruyi', name: '玉佩·如意', price: 300, tag: '稀有', color: '#06b6d4', desc: '温润美玉，吉祥如意' },
+      { id: 'scroll-bamboo', name: '书卷·竹简', price: 100, tag: '', color: '#a3e635', desc: '圣贤之书，开卷有益' },
+      { id: 'sword-white', name: '长剑·秋水', price: 500, tag: '稀有', color: '#e5e7eb', desc: '秋水长剑，寒光逼人' }
+    ];
+
+    const POEMS = [
+      { keyword: '月', correct: '床前明月光', distractors: ['白日依山尽', '黄河入海流', '欲穷千里目'] },
+      { keyword: '花', correct: '人面不知何处去', distractors: ['春眠不觉晓', '处处闻啼鸟', '夜来风雨声'] },
+      { keyword: '山', correct: '会当凌绝顶', distractors: ['举头望明月', '低头思故乡', '疑是地上霜'] },
+      { keyword: '水', correct: '桃花潭水深千尺', distractors: ['日照香炉生紫烟', '遥看瀑布挂前川', '飞流直下三千尺'] },
+      { keyword: '风', correct: '春风又绿江南岸', distractors: ['好雨知时节', '当春乃发生', '随风潜入夜'] },
+      { keyword: '云', correct: '黄鹤一去不复返', distractors: ['此地空余黄鹤楼', '晴川历历汉阳树', '芳草萋萋鹦鹉洲'] },
+      { keyword: '酒', correct: '花间一壶酒', distractors: ['独酌无相亲', '举杯邀明月', '对影成三人'] },
+      { keyword: '鸟', correct: '月出惊山鸟', distractors: ['时鸣春涧中', '人闲桂花落', '夜静春山空'] },
+      { keyword: '雪', correct: '忽如一夜春风来', distractors: ['千树万树梨花开', '散入珠帘湿罗幕', '狐裘不暖锦衾薄'] },
+      { keyword: '春', correct: '春眠不觉晓', distractors: ['处处闻啼鸟', '夜来风雨声', '花落知多少'] }
+    ];
+
+    const NPCS = [
+      { id: 'npc1', name: '云游仙人', x: 300, y: 350, dialogues: ['欢迎来到云端仙山！', '点击下方"活动"可以参加诗词雅集', '集市上新到了一批汉服，快去看看吧'] },
+      { id: 'npc2', name: '桃花仙子', x: 600, y: 450, dialogues: ['这满山桃花开得正好', '参加婚礼宴请可以送红包哦', '诗词飞花令正在进行中，快来挑战'] },
+      { id: 'npc3', name: '酒仙', x: 450, y: 550, dialogues: ['花间一壶酒，独酌无相亲', '听说有人在举办婚礼，一起去热闹热闹', '集市的折扇很不错，值得一看'] }
+    ];
+
+    const DYNAMICS = [
+      '{name} 购买了 {item}',
+      '{name} 在诗词飞花令中获得第一名',
+      '{name} 加入了婚礼宴请',
+      '{name} 穿戴了新服饰',
+      '{name} 与朋友在仙山品茶',
+      '{name} 获得了诗词比赛胜利',
+      '{name} 送出了祝福红包',
+      '{name} 放了一场盛大的烟花',
+      '{name} 探索了云端仙山的新区域',
+      '{name} 与 {name2} 成为了好友'
+    ];
+
+    const WEDDING_GUESTS = ['云游书生', '青莲居士', '月下花影', '清风明月', '墨香琴韵', '山水之间', '竹韵松风', '梅兰竹菊'];
+
+    let gameState = {
+      player: { id: 'me', name: '旅人', avatar: 0, x: 400, y: 400, color: '#f59e0b', frame: 0, status: 'idle' },
+      simPlayers: [],
+      realPlayers: [],
+      npcs: [],
+      chatBubbles: [],
+      petals: [],
+      clouds: [],
+      fireworks: [],
+      dayProgress: 0,
+      spiritStones: CONFIG.SPIRIT_STONES,
+      ownedItems: [],
+      equippedItem: null,
+      stats: { steps: 0, activities: 0, items: 0, interactions: 0 },
+      currentPage: 'world',
+      wsConnected: false,
+      ws: null,
+      selectedItem: null
+    };
+
+    let canvas, ctx;
+    let animationId;
+    let lastTime = 0;
+    let camera = { x: 0, y: 0 };
+    
+    let joystick = {
+      active: false,
+      dx: 0,
+      dy: 0,
+      centerX: 0,
+      centerY: 0
+    };
+
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+      this.beginPath();
+      this.moveTo(x + radius, y);
+      this.lineTo(x + width - radius, y);
+      this.quadraticCurveTo(x + width, y, x + width, y + radius);
+      this.lineTo(x + width, y + height - radius);
+      this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      this.lineTo(x + radius, y + height);
+      this.quadraticCurveTo(x, y + height, x, y + height - radius);
+      this.lineTo(x, y + radius);
+      this.quadraticCurveTo(x, y, x + radius, y);
+      this.closePath();
+    };
+
+    function init() {
+      initCharacterCreation();
+      initNavigation();
+      initMarket();
+      initProfile();
+      initActivities();
+      initPoemGame();
+      initWedding();
+      initDynamicBar();
+      initChat();
+      connectWebSocket();
+    }
+
+    function initCharacterCreation() {
+      const cards = document.querySelectorAll('.character-card');
+      let selectedAvatar = 0;
+
+      cards[0].classList.add('selected');
+
+      cards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+          cards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedAvatar = index;
+        });
+      });
+
+      document.getElementById('clear-name').addEventListener('click', () => {
+        document.getElementById('player-name').value = '';
+        document.getElementById('player-name').focus();
+      });
+
+      document.getElementById('enter-btn').addEventListener('click', () => {
+        const name = document.getElementById('player-name').value.trim() || '旅人';
+        gameState.player.name = name;
+        gameState.player.avatar = selectedAvatar;
+        gameState.player.color = AVATARS[selectedAvatar].color;
+        
+        document.getElementById('create-character').classList.remove('active');
+        document.getElementById('world-page').classList.add('active');
+        
+        setTimeout(() => {
+          initGameCanvas();
+          createSimPlayers();
+        }, 300);
+      });
+    }
+
+    function initNavigation() {
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const page = item.dataset.page;
+          switchPage(page);
+        });
+      });
+    }
+
+    function switchPage(page) {
+      gameState.currentPage = page;
+      
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      if (page === 'world') {
+        document.getElementById('world-page').classList.add('active');
+        document.querySelector('[data-page="world"]').classList.add('active');
+        setTimeout(resumeGame, 100);
+      } else {
+        pauseGame();
+        document.getElementById(page + '-page').classList.add('active');
+        document.querySelector('[data-page="' + page + '"]').classList.add('active');
+        
+        if (page === 'market') updateMarketStones();
+        if (page === 'profile') updateProfile();
+      }
+    }
+
+    function initGameCanvas() {
+      canvas = document.getElementById('game-canvas');
+      ctx = canvas.getContext('2d');
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      canvas.addEventListener('click', handleCanvasClick);
+      canvas.addEventListener('touchstart', handleTouchStart);
+      
+      initJoystick();
+      initParticles();
+      initNPCs();
+      initMobileKeyboardHandler();
+      gameLoop();
+    }
+
+    function initMobileKeyboardHandler() {
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          setTimeout(() => {
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        });
+        
+        input.addEventListener('blur', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        if (document.activeElement.tagName === 'INPUT') {
+          setTimeout(() => {
+            document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
+      });
+    }
+
+    function initJoystick() {
+      const knob = document.getElementById('joystick-knob');
+      const container = document.getElementById('joystick-container');
+      
+      knob.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = container.getBoundingClientRect();
+        joystick.centerX = rect.left + rect.width / 2;
+        joystick.centerY = rect.top + rect.height / 2;
+        joystick.active = true;
+        updateJoystick(touch);
+      });
+      
+      knob.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (joystick.active) {
+          updateJoystick(e.touches[0]);
+        }
+      });
+      
+      knob.addEventListener('touchend', () => {
+        joystick.active = false;
+        joystick.dx = 0;
+        joystick.dy = 0;
+        knob.style.transform = 'translate(-50%, -50%)';
+      });
+      
+      container.addEventListener('touchstart', (e) => {
+        if (e.target === container || e.target.classList.contains('joystick-base')) {
+          e.preventDefault();
+          const touch = e.touches[0];
+          const rect = container.getBoundingClientRect();
+          joystick.centerX = rect.left + rect.width / 2;
+          joystick.centerY = rect.top + rect.height / 2;
+          joystick.active = true;
+          updateJoystick(touch);
+        }
+      });
+      
+      container.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (joystick.active) {
+          updateJoystick(e.touches[0]);
+        }
+      });
+      
+      container.addEventListener('touchend', () => {
+        joystick.active = false;
+        joystick.dx = 0;
+        joystick.dy = 0;
+        knob.style.transform = 'translate(-50%, -50%)';
+      });
+    }
+
+    function updateJoystick(touch) {
+      const dx = touch.clientX - joystick.centerX;
+      const dy = touch.clientY - joystick.centerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxDistance = 27.5;
+      
+      let actualDx = dx;
+      let actualDy = dy;
+      
+      if (distance > maxDistance) {
+        actualDx = (dx / distance) * maxDistance;
+        actualDy = (dy / distance) * maxDistance;
+      }
+      
+      joystick.dx = actualDx / maxDistance;
+      joystick.dy = actualDy / maxDistance;
+      
+      const knob = document.getElementById('joystick-knob');
+      knob.style.transform = `translate(calc(-50% + ${actualDx}px), calc(-50% + ${actualDy}px))`;
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function initParticles() {
+      for (let i = 0; i < 15; i++) {
+        gameState.petals.push(createPetal());
+      }
+      for (let i = 0; i < 8; i++) {
+        gameState.clouds.push(createCloud());
+      }
+    }
+
+    function createPetal() {
+      return {
+        x: Math.random() * CONFIG.WORLD_WIDTH,
+        y: Math.random() * CONFIG.WORLD_HEIGHT,
+        size: Math.random() * 4 + 2,
+        speed: Math.random() * 0.5 + 0.2,
+        drift: Math.random() * 0.3 - 0.15,
+        opacity: Math.random() * 0.5 + 0.5,
+        color: Math.random() > 0.5 ? '#fce7f3' : '#fbcfe8'
+      };
+    }
+
+    function createCloud() {
+      return {
+        x: Math.random() * CONFIG.WORLD_WIDTH,
+        y: Math.random() * CONFIG.WORLD_HEIGHT * 0.5,
+        size: Math.random() * 60 + 40,
+        speed: Math.random() * 0.2 + 0.1,
+        opacity: Math.random() * 0.3 + 0.1
+      };
+    }
+
+    function initNPCs() {
+      gameState.npcs = NPCS.map(npc => ({ ...npc, currentDialogue: 0, showingDialogue: false }));
+    }
+
+    function createSimPlayers() {
+      gameState.simPlayers = [];
+      const count = Math.max(1, CONFIG.SIM_COUNT - gameState.realPlayers.length);
+      for (let i = 0; i < count; i++) {
+        gameState.simPlayers.push(createSimPlayer(i));
+      }
+      updateOnlineCount();
+    }
+
+    function createSimPlayer(index) {
+      return {
+        id: 'sim-' + index,
+        name: SIM_NAMES[Math.floor(Math.random() * SIM_NAMES.length)],
+        color: SIM_COLORS[Math.floor(Math.random() * SIM_COLORS.length)],
+        x: Math.random() * (CONFIG.WORLD_WIDTH - 200) + 100,
+        y: Math.random() * (CONFIG.WORLD_HEIGHT - 200) + 100,
+        targetX: Math.random() * (CONFIG.WORLD_WIDTH - 200) + 100,
+        targetY: Math.random() * (CONFIG.WORLD_HEIGHT - 200) + 100,
+        frame: 0,
+        status: 'walking',
+        stayTimer: 0,
+        chatTimer: Math.random() * 10000,
+        bubble: null,
+        waving: false
+      };
+    }
+
+    function handleCanvasClick(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const worldX = x + camera.x - canvas.width / 2;
+      const worldY = y + camera.y - canvas.height / 2;
+      
+      checkNPCClick(worldX, worldY);
+      
+      gameState.player.targetX = worldX;
+      gameState.player.targetY = worldY;
+      gameState.player.status = 'walking';
+    }
+
+    function handleTouchStart(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      handleCanvasClick(touch);
+    }
+
+    function checkNPCClick(x, y) {
+      for (const npc of gameState.npcs) {
+        const dist = Math.sqrt((x - npc.x) ** 2 + (y - npc.y) ** 2);
+        if (dist < 40) {
+          showNPCDialogue(npc);
+          break;
+        }
+      }
+    }
+
+    function showNPCDialogue(npc) {
+      if (npc.showingDialogue) return;
+      npc.showingDialogue = true;
+      npc.currentDialogue = 0;
+      
+      const dialog = document.createElement('div');
+      dialog.className = 'npc-dialog';
+      dialog.id = 'npc-dialog';
+      dialog.innerHTML = `<div class="name">${npc.name}</div><div class="text">${npc.dialogues[npc.currentDialogue]}</div>`;
+      
+      const screenPos = worldToScreen(npc.x, npc.y - 50);
+      dialog.style.left = screenPos.x + 'px';
+      dialog.style.top = screenPos.y + 'px';
+      
+      document.getElementById('world-page').appendChild(dialog);
+      
+      const advanceDialogue = () => {
+        npc.currentDialogue++;
+        if (npc.currentDialogue < npc.dialogues.length) {
+          dialog.querySelector('.text').textContent = npc.dialogues[npc.currentDialogue];
+        } else {
+          dialog.remove();
+          npc.showingDialogue = false;
+        }
+      };
+      
+      setTimeout(advanceDialogue, 2500);
+      setTimeout(advanceDialogue, 5000);
+      setTimeout(() => {
+        if (dialog.parentNode) dialog.remove();
+        npc.showingDialogue = false;
+      }, 7500);
+    }
+
+    function worldToScreen(worldX, worldY) {
+      return {
+        x: worldX - camera.x + canvas.width / 2,
+        y: worldY - camera.y + canvas.height / 2
+      };
+    }
+
+    function screenToWorld(screenX, screenY) {
+      return {
+        x: screenX + camera.x - canvas.width / 2,
+        y: screenY + camera.y - canvas.height / 2
+      };
+    }
+
+    let keys = {};
+    window.addEventListener('keydown', e => {
+      keys[e.key.toLowerCase()] = true;
+      if (e.key === 'Enter' && gameState.currentPage === 'world') {
+        document.getElementById('world-chat').focus();
+      }
+    });
+    window.addEventListener('keyup', e => {
+      keys[e.key.toLowerCase()] = false;
+    });
+
+    function updatePlayer(dt) {
+      const p = gameState.player;
+      
+      if (keys['w'] || keys['arrowup']) { p.targetY -= CONFIG.PLAYER_SPEED; p.status = 'walking'; }
+      if (keys['s'] || keys['arrowdown']) { p.targetY += CONFIG.PLAYER_SPEED; p.status = 'walking'; }
+      if (keys['a'] || keys['arrowleft']) { p.targetX -= CONFIG.PLAYER_SPEED; p.status = 'walking'; }
+      if (keys['d'] || keys['arrowright']) { p.targetX += CONFIG.PLAYER_SPEED; p.status = 'walking'; }
+      
+      if (joystick.active) {
+        p.targetX += joystick.dx * CONFIG.PLAYER_SPEED;
+        p.targetY += joystick.dy * CONFIG.PLAYER_SPEED;
+        p.status = 'walking';
+      }
+      
+      const dx = p.targetX - p.x;
+      const dy = p.targetY - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist > 1) {
+        p.x += (dx / dist) * CONFIG.PLAYER_SPEED;
+        p.y += (dy / dist) * CONFIG.PLAYER_SPEED;
+        p.frame = (p.frame + 0.1) % 2;
+        gameState.stats.steps += 0.1;
+      } else {
+        p.status = 'idle';
+        p.frame = 0;
+      }
+      
+      p.x = Math.max(50, Math.min(CONFIG.WORLD_WIDTH - 50, p.x));
+      p.y = Math.max(50, Math.min(CONFIG.WORLD_HEIGHT - 50, p.y));
+      
+      camera.x = p.x - canvas.width / 2;
+      camera.y = p.y - canvas.height / 2;
+      
+      camera.x = Math.max(0, Math.min(CONFIG.WORLD_WIDTH - canvas.width, camera.x));
+      camera.y = Math.max(0, Math.min(CONFIG.WORLD_HEIGHT - canvas.height, camera.y));
+    }
+
+    function updateSimPlayers(dt) {
+      gameState.simPlayers.forEach(sim => {
+        if (sim.status === 'walking') {
+          const dx = sim.targetX - sim.x;
+          const dy = sim.targetY - sim.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist > 5) {
+            sim.x += (dx / dist) * 1.2;
+            sim.y += (dy / dist) * 1.2;
+            sim.frame = (sim.frame + 0.08) % 2;
+          } else {
+            sim.status = 'idle';
+            sim.stayTimer = Date.now() + Math.random() * 3000 + 2000;
+          }
+        } else {
+          if (Date.now() > sim.stayTimer) {
+            sim.targetX = Math.random() * (CONFIG.WORLD_WIDTH - 200) + 100;
+            sim.targetY = Math.random() * (CONFIG.WORLD_HEIGHT - 200) + 100;
+            sim.status = 'walking';
+          }
+        }
+        
+        sim.chatTimer -= dt;
+        if (sim.chatTimer <= 0 && !sim.bubble) {
+          sim.bubble = { text: SIM_CHATS[Math.floor(Math.random() * SIM_CHATS.length)], time: Date.now() + 3000 };
+          gameState.stats.interactions++;
+          sim.chatTimer = Math.random() * 10000 + 10000;
+        }
+        
+        if (sim.bubble && Date.now() > sim.bubble.time) {
+          sim.bubble = null;
+        }
+        
+        gameState.simPlayers.forEach(other => {
+          if (other.id !== sim.id) {
+            const dist = Math.sqrt((sim.x - other.x) ** 2 + (sim.y - other.y) ** 2);
+            if (dist < 50) {
+              sim.waving = true;
+              setTimeout(() => { sim.waving = false; }, 1000);
+            }
+          }
+        });
+      });
+    }
+
+    function updateParticles(dt) {
+      gameState.petals.forEach(petal => {
+        petal.y += petal.speed;
+        petal.x += petal.drift;
+        
+        if (petal.y > CONFIG.WORLD_HEIGHT) {
+          petal.y = -10;
+          petal.x = Math.random() * CONFIG.WORLD_WIDTH;
+        }
+      });
+      
+      gameState.clouds.forEach(cloud => {
+        cloud.x += cloud.speed;
+        if (cloud.x > CONFIG.WORLD_WIDTH) {
+          cloud.x = -cloud.size;
+        }
+      });
+    }
+
+    function updateDayCycle(dt) {
+      gameState.dayProgress = (gameState.dayProgress + dt) % CONFIG.DAY_CYCLE;
+    }
+
+    function getSkyColor() {
+      const progress = gameState.dayProgress / CONFIG.DAY_CYCLE;
+      if (progress < 0.25) {
+        return interpolateColor('#ff9a3c', '#f59e0b', progress * 4);
+      } else if (progress < 0.5) {
+        return interpolateColor('#f59e0b', '#0a0e1a', (progress - 0.25) * 4);
+      } else if (progress < 0.75) {
+        return interpolateColor('#0a0e1a', '#6366f1', (progress - 0.5) * 4);
+      } else {
+        return interpolateColor('#6366f1', '#ff9a3c', (progress - 0.75) * 4);
+      }
+    }
+
+    function interpolateColor(color1, color2, factor) {
+      const r1 = parseInt(color1.slice(1, 3), 16);
+      const g1 = parseInt(color1.slice(3, 5), 16);
+      const b1 = parseInt(color1.slice(5, 7), 16);
+      const r2 = parseInt(color2.slice(1, 3), 16);
+      const g2 = parseInt(color2.slice(3, 5), 16);
+      const b2 = parseInt(color2.slice(5, 7), 16);
+      
+      const r = Math.round(r1 + (r2 - r1) * factor);
+      const g = Math.round(g1 + (g2 - g1) * factor);
+      const b = Math.round(b1 + (b2 - b1) * factor);
+      
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function draw() {
+      const skyColor = getSkyColor();
+      ctx.fillStyle = skyColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      drawMountains();
+      drawClouds();
+      drawBuildings();
+      drawWaterfall();
+      drawTrees();
+      drawPaths();
+      
+      gameState.npcs.forEach(npc => drawNPC(npc));
+      gameState.simPlayers.forEach(sim => drawPlayer(sim));
+      gameState.realPlayers.forEach(rp => drawPlayer(rp));
+      drawPlayer(gameState.player);
+      
+      drawPetals();
+      drawChatBubbles();
+    }
+
+    function drawMountains() {
+      const mountains = [
+        { x: 100, y: 600, width: 400, height: 300, color: '#374151' },
+        { x: 400, y: 550, width: 500, height: 350, color: '#4b5563' },
+        { x: 700, y: 600, width: 350, height: 280, color: '#374151' }
+      ];
+      
+      mountains.forEach(m => {
+        ctx.fillStyle = m.color;
+        ctx.beginPath();
+        ctx.moveTo(m.x - m.width / 2, m.y);
+        ctx.lineTo(m.x, m.y - m.height);
+        ctx.lineTo(m.x + m.width / 2, m.y);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.fillStyle = '#9ca3af';
+        ctx.beginPath();
+        ctx.moveTo(m.x - m.width / 4, m.y - m.height * 0.8);
+        ctx.lineTo(m.x, m.y - m.height);
+        ctx.lineTo(m.x + m.width / 4, m.y - m.height * 0.8);
+        ctx.closePath();
+        ctx.fill();
+      });
+    }
+
+    function drawClouds() {
+      gameState.clouds.forEach(cloud => {
+        const screen = worldToScreen(cloud.x, cloud.y);
+        ctx.fillStyle = `rgba(255, 255, 255, ${cloud.opacity})`;
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, cloud.size * 0.5, 0, Math.PI * 2);
+        ctx.arc(screen.x + cloud.size * 0.4, screen.y - cloud.size * 0.2, cloud.size * 0.4, 0, Math.PI * 2);
+        ctx.arc(screen.x + cloud.size * 0.8, screen.y, cloud.size * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function drawBuildings() {
+      const buildings = [
+        { x: 300, y: 400, type: 'pavilion' },
+        { x: 550, y: 450, type: 'tower' },
+        { x: 700, y: 380, type: 'house' }
+      ];
+      
+      buildings.forEach(b => {
+        const screen = worldToScreen(b.x, b.y);
+        
+        if (b.type === 'pavilion') {
+          ctx.fillStyle = '#8B4513';
+          ctx.fillRect(screen.x - 30, screen.y, 60, 30);
+          ctx.fillStyle = '#DC143C';
+          ctx.beginPath();
+          ctx.moveTo(screen.x - 40, screen.y);
+          ctx.lineTo(screen.x, screen.y - 40);
+          ctx.lineTo(screen.x + 40, screen.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.moveTo(screen.x - 20, screen.y - 15);
+          ctx.lineTo(screen.x, screen.y - 35);
+          ctx.lineTo(screen.x + 20, screen.y - 15);
+          ctx.closePath();
+          ctx.fill();
+        } else if (b.type === 'tower') {
+          ctx.fillStyle = '#8B4513';
+          ctx.fillRect(screen.x - 25, screen.y, 50, 40);
+          ctx.fillStyle = '#A0522D';
+          ctx.fillRect(screen.x - 20, screen.y - 30, 40, 30);
+          ctx.fillStyle = '#DC143C';
+          ctx.beginPath();
+          ctx.moveTo(screen.x - 25, screen.y - 30);
+          ctx.lineTo(screen.x, screen.y - 55);
+          ctx.lineTo(screen.x + 25, screen.y - 30);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.fillStyle = '#DEB887';
+          ctx.fillRect(screen.x - 40, screen.y, 80, 40);
+          ctx.fillStyle = '#DC143C';
+          ctx.beginPath();
+          ctx.moveTo(screen.x - 50, screen.y);
+          ctx.lineTo(screen.x, screen.y - 50);
+          ctx.lineTo(screen.x + 50, screen.y);
+          ctx.closePath();
+          ctx.fill();
+        }
+      });
+    }
+
+    function drawWaterfall() {
+      const x = 200;
+      const y = 500;
+      const screen = worldToScreen(x, y);
+      
+      ctx.fillStyle = 'rgba(100, 200, 255, 0.3)';
+      ctx.fillRect(screen.x - 15, screen.y, 30, 150);
+      
+      ctx.strokeStyle = 'rgba(150, 220, 255, 0.5)';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(screen.x - 10 + i * 5, screen.y);
+        ctx.lineTo(screen.x - 5 + i * 3, screen.y + 150);
+        ctx.stroke();
+      }
+    }
+
+    function drawTrees() {
+      const trees = [
+        { x: 150, y: 450, type: 'cherry' },
+        { x: 400, y: 350, type: 'cherry' },
+        { x: 650, y: 500, type: 'cherry' },
+        { x: 800, y: 400, type: 'cherry' },
+        { x: 250, y: 550, type: 'pine' },
+        { x: 750, y: 550, type: 'pine' }
+      ];
+      
+      trees.forEach(t => {
+        const screen = worldToScreen(t.x, t.y);
+        
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(screen.x - 5, screen.y - 30, 10, 30);
+        
+        if (t.type === 'cherry') {
+          const gradient = ctx.createRadialGradient(screen.x, screen.y - 40, 0, screen.x, screen.y - 40, 30);
+          gradient.addColorStop(0, '#fbcfe8');
+          gradient.addColorStop(1, '#f472b6');
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(screen.x, screen.y - 40, 30, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = '#228B22';
+          ctx.beginPath();
+          ctx.moveTo(screen.x - 25, screen.y - 20);
+          ctx.lineTo(screen.x, screen.y - 60);
+          ctx.lineTo(screen.x + 25, screen.y - 20);
+          ctx.closePath();
+          ctx.fill();
+        }
+      });
+    }
+
+    function drawPaths() {
+      ctx.strokeStyle = '#9ca3af';
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      
+      ctx.beginPath();
+      ctx.moveTo(worldToScreen(200, 500).x, worldToScreen(200, 500).y);
+      ctx.lineTo(worldToScreen(300, 400).x, worldToScreen(300, 400).y);
+      ctx.lineTo(worldToScreen(450, 420).x, worldToScreen(450, 420).y);
+      ctx.lineTo(worldToScreen(550, 450).x, worldToScreen(550, 450).y);
+      ctx.lineTo(worldToScreen(700, 380).x, worldToScreen(700, 380).y);
+      ctx.stroke();
+    }
+
+    function drawNPC(npc) {
+      const screen = worldToScreen(npc.x, npc.y);
+      
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(screen.x, screen.y - 30, 15, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(screen.x, screen.y - 25, 8, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 14px Arial';
+      ctx.fillText('!', screen.x - 3, screen.y - 22);
+      
+      ctx.fillStyle = '#8B4513';
+      ctx.fillRect(screen.x - 12, screen.y - 15, 24, 20);
+      
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(npc.name, screen.x, screen.y + 20);
+      ctx.textAlign = 'left';
+    }
+
+    function drawPlayer(p) {
+      const screen = worldToScreen(p.x, p.y);
+      
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(screen.x, screen.y - 25, 12, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(screen.x - 10, screen.y - 10, 20, 18);
+      
+      const legOffset = p.status === 'walking' ? Math.sin(p.frame * Math.PI) * 3 : 0;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(screen.x - 6, screen.y + 8 + legOffset, 7, 10);
+      ctx.fillRect(screen.x + 0, screen.y + 8 - legOffset, 6, 10);
+      
+      ctx.fillStyle = '#fff';
+      ctx.font = '11px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.name, screen.x, screen.y - 45);
+      ctx.textAlign = 'left';
+      
+      if (p.waving) {
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(screen.x + 15, screen.y - 15, 8, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      
+      if (p.bubble) {
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.roundRect(screen.x - 40, screen.y - 60, 80, 25, 8);
+        ctx.fill();
+        ctx.fillStyle = '#333';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.bubble.text, screen.x, screen.y - 48);
+        ctx.textAlign = 'left';
+      }
+    }
+
+    function drawPetals() {
+      gameState.petals.forEach(petal => {
+        const screen = worldToScreen(petal.x, petal.y);
+        ctx.fillStyle = petal.color;
+        ctx.globalAlpha = petal.opacity;
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, petal.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+    }
+
+    function drawChatBubbles() {
+      gameState.chatBubbles = gameState.chatBubbles.filter(b => Date.now() < b.time);
+      gameState.chatBubbles.forEach(b => {
+        const screen = worldToScreen(b.x, b.y);
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.roundRect(screen.x - 50, screen.y - 70, 100, 30, 8);
+        ctx.fill();
+        ctx.fillStyle = '#333';
+        ctx.font = '11px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.text, screen.x, screen.y - 52);
+        ctx.textAlign = 'left';
+      });
+    }
+
+    function gameLoop(timestamp) {
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
+      
+      updatePlayer(dt);
+      updateSimPlayers(dt);
+      updateParticles(dt);
+      updateDayCycle(dt);
+      draw();
+      
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function pauseGame() {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+    }
+
+    function resumeGame() {
+      if (!animationId) {
+        lastTime = performance.now();
+        gameLoop(lastTime);
+      }
+    }
+
+    function initMarket() {
+      const grid = document.getElementById('items-grid');
+      ITEMS.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+          <div class="item-color" style="background: ${item.color}"></div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">💎 ${item.price} <span>灵石</span></div>
+          ${item.tag ? `<span class="tag tag-${item.tag === '热门' ? 'hot' : item.tag === '新品' ? 'new' : 'rare'}">${item.tag}</span>` : ''}
+          ${gameState.ownedItems.includes(item.id) ? '<span class="item-owned">已拥有</span>' : ''}
+        `;
+        card.addEventListener('click', () => showItemModal(item));
+        grid.appendChild(card);
+      });
+    }
+
+    function showItemModal(item) {
+      gameState.selectedItem = item;
+      document.getElementById('modal-title').textContent = item.name;
+      document.getElementById('modal-body').textContent = item.desc;
+      document.getElementById('modal-price').textContent = `💎 ${item.price} 灵石`;
+      
+      const confirmBtn = document.getElementById('modal-confirm');
+      if (gameState.ownedItems.includes(item.id)) {
+        confirmBtn.textContent = '穿戴';
+        confirmBtn.onclick = equipItem;
+      } else {
+        confirmBtn.textContent = '购买';
+        confirmBtn.onclick = buyItem;
+      }
+      
+      document.getElementById('modal-overlay').classList.add('active');
+    }
+
+    function buyItem() {
+      const item = gameState.selectedItem;
+      if (gameState.spiritStones >= item.price) {
+        gameState.spiritStones -= item.price;
+        gameState.ownedItems.push(item.id);
+        gameState.stats.items++;
+        document.getElementById('modal-overlay').classList.remove('active');
+        showToast('购买成功！', 'success');
+        updateMarketStones();
+        initMarket();
+      } else {
+        showToast('灵石不足', 'error');
+      }
+    }
+
+    function equipItem() {
+      const item = gameState.selectedItem;
+      gameState.equippedItem = item.id;
+      gameState.player.color = item.color;
+      document.getElementById('modal-overlay').classList.remove('active');
+      showToast('穿戴成功！', 'success');
+    }
+
+    function updateMarketStones() {
+      document.getElementById('market-stones').textContent = gameState.spiritStones;
+    }
+
+    function initProfile() {
+      document.getElementById('share-btn').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'wonderrealm-profile.png';
+        link.href = canvas ? canvas.toDataURL() : '';
+        link.click();
+        showToast('截图已保存！', 'success');
+      });
+    }
+
+    function updateProfile() {
+      document.getElementById('profile-name').textContent = gameState.player.name;
+      document.getElementById('profile-stones').textContent = gameState.spiritStones;
+      document.getElementById('profile-avatar').style.background = gameState.player.color;
+      
+      document.getElementById('stat-steps').textContent = Math.floor(gameState.stats.steps);
+      document.getElementById('stat-activities').textContent = gameState.stats.activities;
+      document.getElementById('stat-items').textContent = gameState.ownedItems.length;
+      document.getElementById('stat-interactions').textContent = gameState.stats.interactions;
+      
+      const list = document.getElementById('owned-items-list');
+      list.innerHTML = '';
+      gameState.ownedItems.forEach(itemId => {
+        const item = ITEMS.find(i => i.id === itemId);
+        if (item) {
+          const div = document.createElement('div');
+          div.className = `owned-item ${gameState.equippedItem === itemId ? 'equipped' : ''}`;
+          div.style.background = item.color;
+          div.title = item.name;
+          div.addEventListener('click', () => {
+            gameState.equippedItem = itemId;
+            gameState.player.color = item.color;
+            updateProfile();
+          });
+          list.appendChild(div);
+        }
+      });
+    }
+
+    function initActivities() {
+      document.getElementById('poem-card').querySelector('.btn').addEventListener('click', () => {
+        document.getElementById('activity-hall').style.display = 'none';
+        document.getElementById('poem-game').classList.add('active');
+        startPoemGame();
+      });
+      
+      document.getElementById('wedding-card').querySelector('.btn').addEventListener('click', () => {
+        document.getElementById('activity-hall').style.display = 'none';
+        document.getElementById('wedding-scene').classList.add('active');
+        initWeddingScene();
+      });
+      
+      document.getElementById('back-to-hall').addEventListener('click', () => {
+        document.getElementById('poem-game').classList.remove('active');
+        document.getElementById('activity-hall').style.display = 'grid';
+      });
+      
+      document.getElementById('back-to-hall2').addEventListener('click', () => {
+        document.getElementById('wedding-scene').classList.remove('active');
+        document.getElementById('activity-hall').style.display = 'grid';
+      });
+    }
+
+    let poemScore = 0;
+    let poemRound = 0;
+    let poemPlayers = [];
+
+    function initPoemGame() {
+      document.getElementById('restart-poem').addEventListener('click', startPoemGame);
+    }
+
+    function startPoemGame() {
+      poemScore = 0;
+      poemRound = 0;
+      document.getElementById('poem-score').textContent = 0;
+      document.getElementById('poem-feedback').innerHTML = '';
+      document.getElementById('restart-poem').style.display = 'none';
+      gameState.stats.activities++;
+      
+      poemPlayers = [
+        { name: '你', score: 0, color: '#f59e0b', me: true },
+        { name: '云游书生', score: 0, color: '#a78bfa' },
+        { name: '青莲居士', score: 0, color: '#6ee7b7' },
+        { name: '月下花影', score: 0, color: '#fbbf24' },
+        { name: '清风明月', score: 0, color: '#06b6d4' }
+      ];
+      
+      renderPoemPlayers();
+      nextPoemQuestion();
+    }
+
+    function renderPoemPlayers() {
+      const container = document.getElementById('poem-players');
+      container.innerHTML = '';
+      poemPlayers.forEach(p => {
+        const div = document.createElement('div');
+        div.className = `player-avatar ${p.me ? 'me' : ''}`;
+        div.style.background = p.color;
+        div.innerHTML = `<span>${p.score}</span>`;
+        div.title = p.name;
+        container.appendChild(div);
+      });
+    }
+
+    function nextPoemQuestion() {
+      if (poemRound >= 3) {
+        showPoemResult();
+        return;
+      }
+      
+      const poem = POEMS[Math.floor(Math.random() * POEMS.length)];
+      document.getElementById('poem-keyword').textContent = poem.keyword;
+      document.getElementById('poem-text').textContent = `请选择含有"${poem.keyword}"字的诗句`;
+      
+      const options = [...poem.distractors, poem.correct].sort(() => Math.random() - 0.5);
+      const optionsContainer = document.getElementById('poem-options');
+      optionsContainer.innerHTML = '';
+      
+      options.forEach(opt => {
+        const btn = document.createElement('div');
+        btn.className = 'poem-option';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => checkPoemAnswer(opt, poem.correct));
+        optionsContainer.appendChild(btn);
+      });
+      
+      poemRound++;
+    }
+
+    function checkPoemAnswer(selected, correct) {
+      const options = document.querySelectorAll('.poem-option');
+      options.forEach(opt => opt.style.pointerEvents = 'none');
+      
+      options.forEach(opt => {
+        if (opt.textContent === correct) opt.classList.add('correct');
+        else if (opt.textContent === selected) opt.classList.add('wrong');
+      });
+      
+      const feedback = document.getElementById('poem-feedback');
+      if (selected === correct) {
+        poemScore += 10;
+        poemPlayers[0].score += 10;
+        feedback.className = 'poem-feedback success';
+        feedback.textContent = '答对了！+10分';
+        showConfetti();
+      } else {
+        feedback.className = 'poem-feedback error';
+        feedback.textContent = '再想想~';
+      }
+      
+      document.getElementById('poem-score').textContent = poemScore;
+      
+      setTimeout(() => {
+        poemPlayers.forEach((p, i) => {
+          if (i > 0) p.score += Math.floor(Math.random() * 8);
+        });
+        poemPlayers.sort((a, b) => b.score - a.score);
+        renderPoemPlayers();
+        nextPoemQuestion();
+      }, 2000);
+    }
+
+    function showPoemResult() {
+      poemPlayers.sort((a, b) => b.score - a.score);
+      const rank = poemPlayers.findIndex(p => p.me) + 1;
+      
+      document.getElementById('poem-keyword').textContent = '恭喜通关！';
+      document.getElementById('poem-text').textContent = `你获得了第${rank}名！得分：${poemScore}`;
+      document.getElementById('poem-options').innerHTML = '';
+      document.getElementById('poem-feedback').className = 'poem-feedback success';
+      document.getElementById('poem-feedback').textContent = `排名：${poemPlayers.map(p => `${p.name}: ${p.score}分`).join(' | ')}`;
+      document.getElementById('restart-poem').style.display = 'block';
+      
+      showConfetti();
+    }
+
+    function showConfetti() {
+      const colors = ['#f59e0b', '#06b6d4', '#f472b6', '#a78bfa', '#10b981'];
+      for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = (Math.random() * 2 + 1) + 's';
+        piece.style.animationDelay = (Math.random() * 0.5) + 's';
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 3000);
+      }
+    }
+
+    let weddingCanvas, weddingCtx;
+    let weddingGuests = [];
+
+    function initWedding() {
+      document.getElementById('send-redpacket').addEventListener('click', sendRedpacket);
+      document.getElementById('set-fireworks').addEventListener('click', setFireworks);
+    }
+
+    function initWeddingScene() {
+      weddingCanvas = document.getElementById('wedding-canvas');
+      weddingCtx = weddingCanvas.getContext('2d');
+      weddingCanvas.width = weddingCanvas.offsetWidth;
+      weddingCanvas.height = 400;
+      
+      weddingGuests = [];
+      WEDDING_GUESTS.forEach((name, i) => {
+        weddingGuests.push({
+          name,
+          x: 50 + (i % 4) * 150,
+          y: 100 + Math.floor(i / 4) * 120,
+          color: SIM_COLORS[i % SIM_COLORS.length],
+          bubble: null
+        });
+      });
+      
+      const guestsContainer = document.getElementById('wedding-guests');
+      guestsContainer.innerHTML = '';
+      weddingGuests.forEach(g => {
+        const span = document.createElement('span');
+        span.className = 'guest-item';
+        span.textContent = g.name;
+        guestsContainer.appendChild(span);
+      });
+      
+      weddingLoop();
+    }
+
+    function weddingLoop() {
+      weddingCtx.fillStyle = '#1a0a0a';
+      weddingCtx.fillRect(0, 0, weddingCanvas.width, weddingCanvas.height);
+      
+      weddingCtx.fillStyle = '#DC143C';
+      for (let i = 0; i < 8; i++) {
+        const x = 20 + i * 100;
+        weddingCtx.beginPath();
+        weddingCtx.arc(x, 30, 15, 0, Math.PI * 2);
+        weddingCtx.fill();
+        weddingCtx.fillStyle = '#FFD700';
+        weddingCtx.font = '16px Arial';
+        weddingCtx.textAlign = 'center';
+        weddingCtx.fillText('囍', x, 37);
+      }
+      
+      weddingCtx.fillStyle = '#8B4513';
+      weddingCtx.fillRect(weddingCanvas.width / 2 - 60, 180, 120, 80);
+      weddingCtx.fillStyle = '#DC143C';
+      weddingCtx.beginPath();
+      weddingCtx.moveTo(weddingCanvas.width / 2 - 80, 180);
+      weddingCtx.lineTo(weddingCanvas.width / 2, 120);
+      weddingCtx.lineTo(weddingCanvas.width / 2 + 80, 180);
+      weddingCtx.closePath();
+      weddingCtx.fill();
+      weddingCtx.fillStyle = '#FFD700';
+      weddingCtx.font = '24px Arial';
+      weddingCtx.fillText('囍', weddingCanvas.width / 2, 195);
+      
+      for (let i = 0; i < 6; i++) {
+        weddingCtx.fillStyle = '#DEB887';
+        const x = 30 + i * 120;
+        weddingCtx.beginPath();
+        weddingCtx.arc(x, 280, 30, 0, Math.PI * 2);
+        weddingCtx.fill();
+      }
+      
+      weddingGuests.forEach(g => {
+        weddingCtx.fillStyle = g.color;
+        weddingCtx.beginPath();
+        weddingCtx.arc(g.x, g.y, 12, 0, Math.PI * 2);
+        weddingCtx.fill();
+        weddingCtx.fillStyle = '#fff';
+        weddingCtx.fillRect(g.x - 10, g.y + 8, 20, 15);
+        
+        if (g.bubble) {
+          weddingCtx.fillStyle = 'rgba(255,255,255,0.95)';
+          weddingCtx.beginPath();
+          weddingCtx.roundRect(g.x - 30, g.y - 35, 60, 20, 6);
+          weddingCtx.fill();
+          weddingCtx.fillStyle = '#333';
+          weddingCtx.font = '10px Arial';
+          weddingCtx.fillText(g.bubble, g.x, g.y - 22);
+        }
+      });
+      
+      requestAnimationFrame(weddingLoop);
+    }
+
+    function sendRedpacket() {
+      gameState.stats.interactions++;
+      
+      weddingGuests.forEach(g => {
+        g.bubble = '恭喜';
+        setTimeout(() => { g.bubble = null; }, 2000);
+      });
+      
+      const rp = document.createElement('div');
+      rp.className = 'redpacket';
+      rp.style.left = '50%';
+      rp.style.top = '50%';
+      rp.style.setProperty('--tx', '-50px');
+      rp.style.setProperty('--ty', '-150px');
+      document.body.appendChild(rp);
+      setTimeout(() => rp.remove(), 1000);
+      
+      showToast('祝福送上！', 'success');
+    }
+
+    function setFireworks() {
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const fw = document.createElement('div');
+          fw.className = 'firework';
+          fw.style.left = Math.random() * 100 + '%';
+          fw.style.top = Math.random() * 50 + '%';
+          fw.style.background = ['#f59e0b', '#06b6d4', '#f472b6', '#a78bfa', '#10b981'][Math.floor(Math.random() * 5)];
+          document.body.appendChild(fw);
+          setTimeout(() => fw.remove(), 1000);
+        }, i * 100);
+      }
+      
+      weddingGuests.forEach(g => {
+        g.bubble = '哇';
+        setTimeout(() => { g.bubble = null; }, 2000);
+      });
+      
+      showToast('烟花绽放！', 'success');
+    }
+
+    function initDynamicBar() {
+      const updateDynamic = () => {
+        const template = DYNAMICS[Math.floor(Math.random() * DYNAMICS.length)];
+        const name = SIM_NAMES[Math.floor(Math.random() * SIM_NAMES.length)];
+        const name2 = SIM_NAMES[Math.floor(Math.random() * SIM_NAMES.length)];
+        const item = ITEMS[Math.floor(Math.random() * ITEMS.length)].name;
+        
+        const text = template
+          .replace('{name}', name)
+          .replace('{name2}', name2)
+          .replace('{item}', item);
+        
+        document.getElementById('dynamic-text').textContent = text;
+      };
+      
+      updateDynamic();
+      setInterval(updateDynamic, 5000);
+    }
+
+    function initChat() {
+      const input = document.getElementById('world-chat');
+      const sendBtn = document.getElementById('send-chat');
+      
+      const sendChat = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        
+        gameState.chatBubbles.push({
+          x: gameState.player.x,
+          y: gameState.player.y,
+          text,
+          time: Date.now() + 3000
+        });
+        
+        gameState.stats.interactions++;
+        
+        if (gameState.wsConnected && gameState.ws) {
+          gameState.ws.send(JSON.stringify({
+            type: 'chat',
+            id: gameState.player.id,
+            message: text
+          }));
+        }
+        
+        input.value = '';
+        input.blur();
+      };
+      
+      sendBtn.addEventListener('click', sendChat);
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendChat();
+      });
+    }
+
+    function connectWebSocket() {
+      try {
+        const ws = new WebSocket(CONFIG.WS_URL);
+        
+        ws.onopen = () => {
+          gameState.wsConnected = true;
+          gameState.ws = ws;
+          
+          ws.send(JSON.stringify({
+            type: 'join',
+            id: gameState.player.id,
+            name: gameState.player.name,
+            color: gameState.player.color,
+            avatar: gameState.player.avatar
+          }));
+          
+          showToast('已连接到多人服务器', 'success');
+        };
+        
+        ws.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          switch (data.type) {
+            case 'playerJoin':
+              gameState.realPlayers.push(data.player);
+              createSimPlayers();
+              showToast(`${data.player.name} 加入了世界`, 'success');
+              break;
+            case 'playerLeave':
+              gameState.realPlayers = gameState.realPlayers.filter(p => p.id !== data.id);
+              createSimPlayers();
+              break;
+            case 'playerMove':
+              const player = gameState.realPlayers.find(p => p.id === data.id);
+              if (player) {
+                player.x = data.x;
+                player.y = data.y;
+              }
+              break;
+            case 'playerChat':
+              const p = gameState.realPlayers.find(player => player.id === data.id);
+              if (p) {
+                gameState.chatBubbles.push({
+                  x: p.x,
+                  y: p.y,
+                  text: data.message,
+                  time: Date.now() + 3000
+                });
+              }
+              break;
+            case 'playerList':
+              gameState.realPlayers = data.players;
+              createSimPlayers();
+              break;
+          }
+        };
+        
+        ws.onerror = () => {
+          gameState.wsConnected = false;
+        };
+        
+        ws.onclose = () => {
+          gameState.wsConnected = false;
+        };
+      } catch (e) {
+        gameState.wsConnected = false;
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'system-toast';
+      toast.textContent = message;
+      toast.style.borderColor = type === 'success' ? '#10b981' : '#ef4444';
+      toast.style.color = type === 'success' ? '#10b981' : '#ef4444';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    function updateOnlineCount() {
+      const count = 1 + gameState.simPlayers.length + gameState.realPlayers.length;
+      document.getElementById('online-count').textContent = `在线 ${count}人`;
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
