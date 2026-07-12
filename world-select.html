@@ -544,9 +544,14 @@
       const worldCards = document.querySelectorAll('.world-card');
       worldCards.forEach(card => {
         card.addEventListener('click', () => {
-          const span = card.querySelector('span');
-          if (span && span.textContent) {
-            alert(`即将进入 ${span.textContent} 世界！`);
+          const world = card.dataset.world;
+          if (world === 'wedding-feast') {
+            window.location.href = 'game-page.html';
+          } else {
+            const span = card.querySelector('span');
+            if (span && span.textContent) {
+              alert(`即将进入 ${span.textContent} 世界！`);
+            }
           }
         });
       });
