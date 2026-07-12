@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>世界选择 - 幻境漫游 WonderRealm</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #1a1a3e;
+      --bg-card: rgba(17,24,39,0.85);
+      --accent: #f59e0b;
+      --accent2: #06b6d4;
+      --text: #e8ecf4;
+      --text-muted: #8892a8;
+      --border: rgba(255,255,255,0.1);
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .page.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* 世界选择页 */
+    #world-select-page {
+      flex-direction: column;
+      background: #0a0e1a url('assets/previews/preview_mountain.png') no-repeat center center;
+      background-size: cover;
+      padding: 15px 15px;
+      position: relative;
+    }
+
+    #world-select-page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(10, 14, 26, 0.2), rgba(10, 14, 26, 0.4));
+      z-index: 0;
+    }
+
+    .world-select-header {
+      text-align: center;
+      margin-bottom: 8px;
+      z-index: 1;
+    }
+
+    .world-select-title {
+      font-size: 1.3rem;
+      color: #ffd700;
+      margin-bottom: 6px;
+    }
+
+    .world-select-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .world-select-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .world-select-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .world-select-content::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+
+    .world-select-content::-webkit-scrollbar-thumb {
+      background: rgba(255,215,0,0.3);
+      border-radius: 3px;
+    }
+
+    .world-select-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,215,0,0.5);
+    }
+
+    .category-title {
+      display: inline-block;
+      font-size: 0.85rem;
+      color: #fff;
+      margin-bottom: 8px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .world-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .world-card {
+      aspect-ratio: 5 / 6;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      border: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .world-card:hover {
+      transform: scale(1.02);
+      border-color: rgba(255,215,0,0.5);
+      box-shadow: 0 4px 20px rgba(255,215,0,0.2);
+    }
+
+    .add-card-btn {
+      aspect-ratio: 5 / 6;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      border: 2px dashed rgba(255,215,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .add-card-btn:hover {
+      background: rgba(255,215,0,0.05);
+      border-color: rgba(255,215,0,0.6);
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(255,215,0,0.15);
+    }
+
+    .add-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(212,165,116,0.2) 100%);
+      border: 2px solid rgba(255,215,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .add-icon {
+      font-size: 1.5rem;
+      color: rgba(255,215,0,0.7);
+      font-weight: 300;
+    }
+
+    .add-text {
+      font-size: 0.8rem;
+      color: rgba(255,215,0,0.6);
+      font-weight: 500;
+    }
+
+    .world-image-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .world-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .world-name {
+      font-size: 0.85rem;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+      padding: 8px 6px 4px;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .world-desc {
+      display: none;
+    }
+
+    .enter-btn {
+      padding: 6px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      color: #ffd700;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .enter-icon-wrap {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .enter-icon-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(212,165,116,0.3) 50%, rgba(139,69,19,0.2) 100%);
+      border: 2px solid rgba(255,215,0,0.2);
+      z-index: -1;
+      transition: all 0.3s;
+    }
+    .enter-btn:hover .enter-icon-wrap::before {
+      transform: scale(1.1);
+      border-color: rgba(255,215,0,0.8);
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+
+    .enter-icon {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    .enter-btn:hover {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .social-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(255,215,0,0.2);
+      margin-top: 10px;
+    }
+
+    .preview-icons {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      padding: 4px;
+      position: relative;
+    }
+    .preview-icon-wrap {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview-icon-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(212,165,116,0.3) 50%, rgba(139,69,19,0.2) 100%);
+      border: 2px solid rgba(255,215,0,0.4);
+      z-index: -1;
+      transition: all 0.3s;
+    }
+    .preview-item:hover .preview-icon-wrap::before {
+      transform: scale(1.1);
+      border-color: rgba(255,215,0,0.8);
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+    .preview-item:hover { 
+      transform: translateY(-3px); 
+    }
+    .preview-item img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .preview-item span {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 600;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      .world-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .world-select-title {
+        font-size: 1.2rem;
+      }
+
+      .world-name {
+        font-size: 0.8rem;
+        padding: 6px 4px 3px;
+      }
+
+      .enter-btn {
+        font-size: 0.65rem;
+        padding: 6px 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .world-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      #world-select-page {
+        padding: 15px 10px;
+      }
+
+      .world-name {
+        font-size: 0.75rem;
+        padding: 5px 3px 2px;
+      }
+
+      .enter-btn {
+        font-size: 0.6rem;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="world-select-page" class="page active">
+      <div class="world-select-header">
+        <h2 class="world-select-title">选择你的世界</h2>
+        <p class="world-select-subtitle">探索奇幻风景，体验文化盛宴</p>
+      </div>
+
+      <div class="world-select-content">
+        <div class="category-section">
+          <h3 class="category-title">奇幻风景探索</h3>
+          <div class="world-grid">
+            <div class="world-card" data-world="cloud-mountain">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_mountain.png" alt="云端仙山">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/poem.png" class="enter-icon" alt="图标">
+                </div>
+                <span>云端仙山</span>
+              </button>
+            </div>
+            <div class="world-card" data-world="underwater-palace">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_ocean.png" alt="海底龙宫">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/market.png" class="enter-icon" alt="图标">
+                </div>
+                <span>海底龙宫</span>
+              </button>
+            </div>
+            <div class="world-card" data-world="space-travel">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_space.png" alt="宇宙遨游">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/festival.png" class="enter-icon" alt="图标">
+                </div>
+                <span>宇宙遨游</span>
+              </button>
+            </div>
+            <div class="add-card-btn" onclick="createNewCard(this)">
+              <div class="add-icon-wrap">
+                <span class="add-icon">+</span>
+              </div>
+              <span class="add-text">添加世界</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-section">
+          <h3 class="category-title">文化社交活动</h3>
+          <div class="world-grid">
+            <div class="world-card" data-world="poetry-gathering">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_poem.jpg" alt="诗词雅集">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/poem.png" class="enter-icon" alt="图标">
+                </div>
+                <span>诗词雅集</span>
+              </button>
+            </div>
+            <div class="world-card" data-world="wedding-feast">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_midautumn.jpg" alt="节日庆典">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/wedding.png" class="enter-icon" alt="图标">
+                </div>
+                <span>节日庆典</span>
+              </button>
+            </div>
+            <div class="world-card" data-world="mid-autumn">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_wedding.jpg" alt="婚礼宴请">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/wedding.png" class="enter-icon" alt="图标">
+                </div>
+                <span>婚礼宴请</span>
+              </button>
+            </div>
+            <div class="add-card-btn" onclick="createNewCard(this)">
+              <div class="add-icon-wrap">
+                <span class="add-icon">+</span>
+              </div>
+              <span class="add-text">添加活动</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const ICONS = ['assets/icons/poem.png', 'assets/icons/wedding.png', 'assets/icons/lantern.png', 'assets/icons/festival.png', 'assets/icons/market.png'];
+    const PREVIEWS = ['assets/previews/preview_mountain.png', 'assets/previews/preview_ocean.png', 'assets/previews/preview_space.png', 'assets/previews/preview_poem.jpg', 'assets/previews/preview_midautumn.jpg', 'assets/previews/preview_wedding.jpg'];
+
+    function createNewCard(btn) {
+      const cardName = prompt('请输入新世界名称：');
+      if (!cardName) return;
+
+      const worldGrid = btn.parentElement;
+      const categoryTitle = worldGrid.parentElement.querySelector('.category-title').textContent;
+      
+      const newCard = document.createElement('div');
+      newCard.className = 'world-card';
+      newCard.setAttribute('data-world', 'custom-' + Date.now());
+      
+      const randomIcon = ICONS[Math.floor(Math.random() * ICONS.length)];
+      const randomPreview = PREVIEWS[Math.floor(Math.random() * PREVIEWS.length)];
+
+      newCard.innerHTML = `
+        <div class="world-image-wrapper">
+          <img class="world-icon" src="${randomPreview}" alt="${cardName}">
+        </div>
+        <button class="enter-btn">
+          <div class="enter-icon-wrap">
+            <img src="${randomIcon}" class="enter-icon" alt="图标">
+          </div>
+          <span>${cardName}</span>
+        </button>
+      `;
+
+      worldGrid.insertBefore(newCard, btn);
+      
+      newCard.addEventListener('click', () => {
+        alert(`即将进入 ${cardName} 世界！`);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const worldCards = document.querySelectorAll('.world-card');
+      worldCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const span = card.querySelector('span');
+          if (span && span.textContent) {
+            alert(`即将进入 ${span.textContent} 世界！`);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
