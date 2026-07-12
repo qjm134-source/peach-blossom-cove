@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>幻境漫游 - 诗词雅集</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+
+    #poem-page {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background-image: url('assets/previews/preview_poem.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .poem-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%);
+    }
+
+    .poem-hint {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      padding: 15px 30px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 30px;
+      border: 1px solid rgba(255,215,0,0.3);
+      animation: pulse 2s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    .video-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-container.active {
+      display: flex;
+    }
+
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .close-video-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.5);
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .close-video-btn:hover {
+      background: rgba(255,255,255,0.4);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="poem-page">
+    <div class="poem-overlay"></div>
+    <div class="poem-hint">
+      <div style="font-size: 1.3rem; margin-bottom: 8px; color: #ffd700;">📜 诗词雅集</div>
+      <div>按下 WASD 或方向键开始体验</div>
+    </div>
+  </div>
+
+  <div class="video-container" id="video-container">
+    <button class="close-video-btn" id="close-video-btn">✕</button>
+    <video id="poem-video" controls autoplay></video>
+  </div>
+
+  <script>
+    const videoContainer = document.getElementById('video-container');
+    const poemVideo = document.getElementById('poem-video');
+    const closeVideoBtn = document.getElementById('close-video-btn');
+
+    function startPoem() {
+      videoContainer.classList.add('active');
+      poemVideo.src = 'assets/scene/poem.mp4';
+      poemVideo.requestFullscreen().catch(err => {
+        console.log('全屏失败:', err);
+      });
+    }
+
+    function closeVideo() {
+      videoContainer.classList.remove('active');
+      poemVideo.pause();
+      poemVideo.src = '';
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+        e.preventDefault();
+        if (!videoContainer.classList.contains('active')) {
+          startPoem();
+        }
+      }
+    });
+
+    closeVideoBtn.addEventListener('click', closeVideo);
+
+    poemVideo.addEventListener('ended', closeVideo);
+  </script>
+</body>
+</html>

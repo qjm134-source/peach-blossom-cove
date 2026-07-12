@@ -547,6 +547,10 @@
           const world = card.dataset.world;
           if (world === 'wedding-feast') {
             window.location.href = 'game-page.html';
+          } else if (world === 'poetry-gathering') {
+            window.location.href = 'poem-page.html';
+          } else if (world === 'mid-autumn') {
+            window.location.href = 'wedding-page.html';
           } else {
             const span = card.querySelector('span');
             if (span && span.textContent) {
