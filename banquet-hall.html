@@ -206,11 +206,11 @@
     /* 控制按钮 */
     .controls {
       position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 70px;
+      left: 15px;
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 10px;
       z-index: 30;
     }
 
@@ -315,12 +315,12 @@
       left: 50%;
       transform: translate(-50%, -50%);
       text-align: center;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.9);
       font-size: 1rem;
       padding: 12px 25px;
-      background: rgba(0,0,0,0.3);
+      background: transparent;
       border-radius: 20px;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: none;
       animation: pulse 2s ease-in-out infinite;
       z-index: 50;
     }
@@ -342,22 +342,10 @@
     <div class="red-ribbon" style="top: 80px; left: 150px; width: 300px; transform: rotate(5deg);"></div>
     <div class="red-ribbon" style="top: 80px; right: 150px; width: 300px; transform: rotate(-5deg);"></div>
 
-    <!-- 圆桌 -->
-    <div class="round-table" style="top: 250px; left: 200px;">
-      <div class="table-cloth"></div>
-    </div>
-    <div class="round-table" style="top: 250px; right: 200px;">
-      <div class="table-cloth"></div>
-    </div>
-    <div class="round-table" style="top: 400px; left: 300px;">
-      <div class="table-cloth"></div>
-    </div>
-    <div class="round-table" style="top: 400px; right: 300px;">
-      <div class="table-cloth"></div>
-    </div>
+
 
     <!-- 花堂 -->
-    <div class="flower-hall" style="top: 150px; left: 50%; transform: translateX(-50%);">
+    <div class="flower-hall" style="top: 80px; left: 180px; transform: none;">
       <div class="hall-roof"></div>
       <div class="hall-decorations">
         <div class="hall-flower"></div>
@@ -370,6 +358,9 @@
     <!-- 角色容器 -->
     <div id="characters-container"></div>
 
+    <!-- 返回按钮 -->
+    <a href="world-select.html" class="back-btn">←</a>
+
     <!-- 控制按钮 -->
     <div class="controls">
       <button class="control-btn" id="red-envelope-btn">送红包</button>
@@ -377,17 +368,16 @@
     </div>
 
     <!-- 聊天框 -->
-    <div class="chat-input-container" style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; gap: 10px;">
+    <div class="chat-input-container" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; gap: 10px;">
       <input type="text" id="chat-input" placeholder="输入聊天内容..." style="padding: 10px; width: 250px; border-radius: 20px; border: 2px solid #8b4513; outline: none; font-size: 1rem;">
       <button class="control-btn" id="send-chat-btn" style="padding: 10px 20px;">发送</button>
     </div>
 
-    <!-- 返回按钮 -->
-    <a href="world-select.html" class="back-btn">←</a>
-
     <!-- 提示信息 -->
     <div class="hint">
       <div style="font-size: 1.5rem; margin-bottom: 10px; color: #ffd700;">🏮 中式宴会厅</div>
+    </div>
+    <div class="tips" style="position: absolute; bottom: 35px; right: 20px; text-align: right; color: rgba(255,255,255,0.8); font-size: 0.85rem; z-index: 45;">
       <div>使用 WASD 或方向键控制角色移动</div>
       <div>点击附近宾客发送祝福</div>
     </div>

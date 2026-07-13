@@ -317,6 +317,10 @@
     closeVideoBtn.addEventListener('click', closeVideo);
 
     gameVideo.addEventListener('ended', closeVideo);
+
+    document.querySelector('.activity-card[data-activity="mid-autumn"]').addEventListener('click', () => {
+      window.location.href = 'product-showcase.html';
+    });
   </script>
 </body>
 </html>
