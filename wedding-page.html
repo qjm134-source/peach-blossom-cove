@@ -92,11 +92,185 @@
       background: rgba(255,255,255,0.4);
       transform: scale(1.1);
     }
+
+    .back-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 100;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+
+    .current-activities {
+      position: absolute;
+      top: 60px;
+      left: 15px;
+      right: 15px;
+      z-index: 20;
+    }
+
+    .activities-title {
+      font-size: 0.85rem;
+      color: #ffd700;
+      margin-bottom: 8px;
+      padding-left: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .activities-title::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(to bottom, #ffd700, #daa520);
+      border-radius: 2px;
+    }
+
+    .activities-grid {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .activities-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .activity-card {
+      flex: 0 0 calc(33.33% - 7px);
+      max-width: 160px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,215,0,0.2);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,215,0,0.5);
+      box-shadow: 0 4px 15px rgba(255,215,0,0.15);
+    }
+
+    .activity-image {
+      width: 100%;
+      height: 65px;
+      object-fit: cover;
+    }
+
+    .activity-info {
+      padding: 6px 8px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .activity-name {
+      font-size: 0.7rem;
+      color: #fff;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .activity-tag {
+      font-size: 0.45rem;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .activity-tag.active {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+    }
+
+    .activity-tag.upcoming {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+    }
+
+    .activity-participants {
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .activity-participants::before {
+      content: '👥';
+      font-size: 0.6rem;
+    }
   </style>
 </head>
 <body>
   <div id="wedding-page">
     <div class="wedding-overlay"></div>
+    <a href="world-select.html" class="back-btn">←</a>
+    <div class="current-activities">
+      <h3 class="activities-title">当前活动</h3>
+      <div class="activities-grid">
+        <div class="activity-card" data-activity="class-reunion">
+          <img class="activity-image" src="assets/previews/preview_poem.jpg" alt="同学聚会">
+          <div class="activity-info">
+            <div class="activity-name">
+              <span>同学聚会</span>
+              <span class="activity-tag active">进行中</span>
+            </div>
+            <div class="activity-participants">10人参与</div>
+          </div>
+        </div>
+        <div class="activity-card" data-activity="wedding-feast">
+          <img class="activity-image" src="assets/previews/preview_wedding.jpg" alt="婚礼宴请">
+          <div class="activity-info">
+            <div class="activity-name">
+              <span>婚礼宴请</span>
+              <span class="activity-tag active">进行中</span>
+            </div>
+            <div class="activity-participants">12人参与</div>
+          </div>
+        </div>
+        <div class="activity-card" data-activity="birthday-party">
+          <img class="activity-image" src="assets/previews/preview_midautumn.jpg" alt="生日派对">
+          <div class="activity-info">
+            <div class="activity-name">
+              <span>生日派对</span>
+              <span class="activity-tag upcoming">可预约</span>
+            </div>
+            <div class="activity-participants">6人参与</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="wedding-hint">
       <div style="font-size: 1.3rem; margin-bottom: 8px; color: #ffd700;">💒 婚礼宴请</div>
       <div>按下 WASD 或方向键开始体验</div>

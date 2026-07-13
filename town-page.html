@@ -125,10 +125,39 @@
       background: rgba(255,0,0,0.5);
       border-color: #fff;
     }
+
+    .back-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 100;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
   </style>
 </head>
 <body>
   <div class="page-overlay"></div>
+  <a href="world-select.html" class="back-btn">←</a>
   <div class="page-content">
     <h1 class="page-title">长安繁华</h1>
     <p class="page-subtitle">漫步千年古都，感受盛世繁华</p>

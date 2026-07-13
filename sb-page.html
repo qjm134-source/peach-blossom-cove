@@ -92,11 +92,40 @@
       background: rgba(255,255,255,0.4);
       transform: scale(1.1);
     }
+
+    .back-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 100;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
   </style>
 </head>
 <body>
   <div id="sb-page">
     <div class="sb-overlay"></div>
+    <a href="world-select.html" class="back-btn">←</a>
     <div class="sb-hint">
       <div style="font-size: 1.3rem; margin-bottom: 8px; color: #ffd700;">🌃 赛博城市</div>
       <div>按下 WASD 或方向键开始体验</div>
