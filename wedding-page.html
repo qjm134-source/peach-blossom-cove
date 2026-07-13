@@ -249,8 +249,8 @@
             <div class="activity-participants">10人参与</div>
           </div>
         </div>
-        <div class="activity-card" data-activity="wedding-feast">
-          <img class="activity-image" src="assets/previews/preview_wedding.jpg" alt="婚礼宴请">
+        <div class="activity-card" data-activity="banquet-hall">
+          <img class="activity-image" src="assets/previews/banquet.jpg" alt="婚礼宴请">
           <div class="activity-info">
             <div class="activity-name">
               <span>婚礼宴请</span>
@@ -317,6 +317,20 @@
     closeVideoBtn.addEventListener('click', closeVideo);
 
     weddingVideo.addEventListener('ended', closeVideo);
+
+    // 添加活动卡片点击事件
+    document.querySelectorAll('.activity-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const activity = card.dataset.activity;
+        if (activity === 'banquet-hall') {
+          window.location.href = 'banquet-hall.html';
+        } else if (activity === 'class-reunion') {
+          window.location.href = 'poem-page.html';
+        } else if (activity === 'birthday-party') {
+          window.location.href = 'game-page.html';
+        }
+      });
+    });
   </script>
 </body>
 </html>

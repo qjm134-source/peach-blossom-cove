@@ -93,6 +93,8 @@
       transform: scale(1.1);
     }
 
+    
+
     .back-btn {
       position: absolute;
       top: 15px;
@@ -313,6 +315,7 @@
       flex-direction: column;
       align-items: center;
       gap: 2px;
+      position: relative;
     }
 
     .avatar-circle {
@@ -339,10 +342,47 @@
       text-align: center;
     }
 
-    .participant-score {
+    .chat-bubble {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      padding: 4px 8px;
+      border-radius: 8px;
       font-size: 0.55rem;
-      color: #8b4513;
-      font-weight: 600;
+      color: #333;
+      border: 2px solid #8b4513;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .chat-bubble.show {
+      opacity: 1;
+    }
+
+    .chat-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px 6px 0;
+      border-style: solid;
+      border-color: #8b4513 transparent transparent;
+    }
+
+    .chat-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px 5px 0;
+      border-style: solid;
+      border-color: #fff transparent transparent;
     }
 
     .poem-display {
@@ -601,6 +641,7 @@
   <div id="poem-page">
     <div class="poem-overlay"></div>
     <a href="world-select.html" class="back-btn">←</a>
+    
     <div class="current-activities">
       <h3 class="activities-title">当前活动</h3>
       <div class="activities-grid">
@@ -754,9 +795,9 @@
         const avatar = document.createElement('div');
         avatar.className = 'participant-avatar';
         avatar.innerHTML = `
+          <div class="chat-bubble" id="bubble-${p.isYou ? 'you' : p.name}"></div>
           <div class="avatar-circle ${p.isYou ? 'you' : ''}" style="background-image: url('${p.avatar}')"></div>
           <div class="participant-name">${p.name}</div>
-          <div class="participant-score">${p.score}分</div>
         `;
         participantsArea.appendChild(avatar);
       });
@@ -768,11 +809,14 @@
         return;
       }
 
+      const bubble = document.getElementById('bubble-you');
+      if (bubble) {
+        bubble.classList.remove('show');
+      }
+
       const data = poemData[currentRound];
       keywordDisplay.textContent = data.keyword;
       poemDisplay.textContent = '请选择含有关键字的诗句';
-      feedbackArea.innerHTML = '';
-      scoreDisplay.textContent = `你的得分：${playerScore}`;
       isAnswering = true;
 
       const options = shuffleArray([data.correct, ...data.wrongs]);
@@ -795,14 +839,18 @@
       const optionBtns = optionsArea.querySelectorAll('.option-btn');
       optionBtns.forEach(b => b.disabled = true);
 
+      const bubble = document.getElementById('bubble-you');
+      if (bubble) {
+        bubble.textContent = btn.textContent.substring(0, 7) + '...';
+        bubble.classList.add('show');
+      }
+
       if (isCorrect) {
         btn.classList.add('correct');
         playerScore += 10;
-        feedbackArea.innerHTML = '<div class="feedback-text correct">答对了！+10分</div>';
         poemDisplay.textContent = poemData[currentRound].correct;
       } else {
         btn.classList.add('wrong');
-        feedbackArea.innerHTML = '<div class="feedback-text wrong">再想想~</div>';
         optionBtns.forEach(b => {
           if (b.textContent === poemData[currentRound].correct) {
             b.classList.add('correct');
