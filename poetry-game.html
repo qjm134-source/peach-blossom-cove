@@ -193,9 +193,8 @@
 
     .scroll-container {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 70px;
+      right: 15px;
       background: linear-gradient(to bottom, #f5e6d3, #e8d5b7, #f5e6d3);
       border-radius: 8px;
       padding: 12px;
@@ -203,6 +202,8 @@
       width: calc(100% - 140px);
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       border: 6px solid #8b4513;
+      transform: scale(0.667);
+      transform-origin: top right;
     }
 
     .scroll-container::before,
@@ -232,10 +233,10 @@
 
     .keyword-display {
       font-family: 'STKaiti', 'KaiTi', serif;
-      font-size: 3rem;
+      font-size: 2rem;
       color: #8b0000;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-      letter-spacing: 8px;
+      letter-spacing: 6px;
     }
 
     .keyword-label {
@@ -248,22 +249,22 @@
     .poem-display {
       background: rgba(255,255,255,0.6);
       border-radius: 4px;
-      padding: 15px;
-      margin-bottom: 15px;
-      min-height: 60px;
+      padding: 10px;
+      margin-bottom: 10px;
+      min-height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'STKaiti', 'KaiTi', serif;
-      font-size: 0.95rem;
+      font-size: 0.7rem;
       color: #3d3d3d;
-      line-height: 1.6;
-      border-left: 3px solid #8b4513;
+      line-height: 1.4;
+      border-left: 2px solid #8b4513;
     }
 
     .options-area {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-direction: column;
       gap: 8px;
       margin-bottom: 15px;
     }
@@ -274,7 +275,7 @@
       border: 2px solid #cd853f;
       border-radius: 6px;
       font-family: 'STKaiti', 'KaiTi', serif;
-      font-size: 0.75rem;
+      font-size: 1rem;
       color: #5d4e37;
       cursor: pointer;
       transition: all 0.3s;
