@@ -148,21 +148,68 @@
       background: rgba(255,215,0,0.3);
     }
 
+    .audience-area {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    .audience-avatar {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: all 0.3s;
+    }
+
+    .audience-avatar .avatar-circle {
+      width: 50px;
+      height: 50px;
+      border: 3px solid #8b4513;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .audience-avatar.you .avatar-circle {
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(255,215,0,0.6);
+    }
+
+    .audience-avatar.pos-1 { bottom: 12%; left: 8%; }
+    .audience-avatar.pos-2 { bottom: 15%; left: 28%; }
+    .audience-avatar.pos-3 { bottom: 12%; left: 55%; }
+    .audience-avatar.pos-4 { bottom: 18%; left: 75%; }
+
+    .audience-name {
+      font-size: 0.6rem;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
     .chat-bubble {
       position: absolute;
-      top: -35px;
-      left: 20px;
+      top: -40px;
+      left: 50%;
       transform: translateX(-50%);
       background: #fff;
-      padding: 4px 8px;
+      padding: 5px 10px;
       border-radius: 8px;
-      font-size: 0.55rem;
+      font-size: 0.6rem;
       color: #333;
       border: 2px solid #8b4513;
       white-space: nowrap;
       opacity: 0;
       transition: opacity 0.3s;
       pointer-events: none;
+      z-index: 100;
     }
 
     .chat-bubble.show {
@@ -485,6 +532,8 @@
     
     <div class="participants-area" id="participants-area"></div>
     
+    <div class="audience-area" id="audience-area"></div>
+    
     <div class="scroll-container">
       <div class="celebration-overlay" id="celebration-overlay"></div>
       <div class="game-header">
@@ -508,6 +557,7 @@
 
   <script>
     const participantsArea = document.getElementById('participants-area');
+    const audienceArea = document.getElementById('audience-area');
     const keywordDisplay = document.getElementById('keyword-display');
     const poemDisplay = document.getElementById('poem-display');
     const optionsArea = document.getElementById('options-area');
@@ -569,6 +619,24 @@
         `;
         participantsArea.appendChild(avatar);
       });
+      
+      renderAudience();
+    }
+
+    function renderAudience() {
+      audienceArea.innerHTML = '';
+      const audiencePositions = ['pos-1', 'pos-2', 'pos-3', 'pos-4'];
+      participants.slice(0, 4).forEach((p, index) => {
+        const audienceAvatar = document.createElement('div');
+        audienceAvatar.className = `audience-avatar ${audiencePositions[index]} ${p.isYou ? 'you' : ''}`;
+        
+        audienceAvatar.innerHTML = `
+          <div class="chat-bubble" id="audience-bubble-${p.isYou ? 'you' : p.name}"></div>
+          <div class="avatar-circle" style="background-image: url('${p.avatar}')"></div>
+          <div class="audience-name">${p.name}</div>
+        `;
+        audienceArea.appendChild(audienceAvatar);
+      });
     }
 
     function renderQuestion() {
@@ -580,6 +648,11 @@
       const bubble = document.getElementById('bubble-you');
       if (bubble) {
         bubble.classList.remove('show');
+      }
+
+      const audienceBubble = document.getElementById('audience-bubble-you');
+      if (audienceBubble) {
+        audienceBubble.classList.remove('show');
       }
 
       const data = poemData[currentRound];
@@ -607,12 +680,6 @@
       const optionBtns = optionsArea.querySelectorAll('.option-btn');
       optionBtns.forEach(b => b.disabled = true);
 
-      const bubble = document.getElementById('bubble-you');
-      if (bubble) {
-        bubble.textContent = btn.textContent.substring(0, 7) + '...';
-        bubble.classList.add('show');
-      }
-
       if (isCorrect) {
         btn.classList.add('correct');
         playerScore += 10;
@@ -633,6 +700,18 @@
       });
       participants[0].score = playerScore;
       renderParticipants();
+
+      const bubble = document.getElementById('bubble-you');
+      if (bubble) {
+        bubble.textContent = btn.textContent.substring(0, 7) + '...';
+        bubble.classList.add('show');
+      }
+
+      const audienceBubble = document.getElementById('audience-bubble-you');
+      if (audienceBubble) {
+        audienceBubble.textContent = btn.textContent;
+        audienceBubble.classList.add('show');
+      }
 
       setTimeout(() => {
         currentRound++;
