@@ -415,6 +415,28 @@
         <div class="category-section">
           <h3 class="category-title">奇幻风景探索</h3>
           <div class="world-grid">
+            <div class="world-card" data-world="space-travel">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/huan.png" alt="异域幻境">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/festival.png" class="enter-icon" alt="图标">
+                </div>
+                <span>异域幻境</span>
+              </button>
+            </div>
+            <div class="world-card" data-world="underwater-palace">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/town.png" alt="长安繁华">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/market.png" class="enter-icon" alt="图标">
+                </div>
+                <span>长安繁华</span>
+              </button>
+            </div>
             <div class="world-card" data-world="cloud-mountain">
               <div class="world-image-wrapper">
                 <img class="world-icon" src="assets/previews/sb.png" alt="赛博城市">
@@ -424,28 +446,6 @@
                   <img src="assets/icons/poem.png" class="enter-icon" alt="图标">
                 </div>
                 <span>赛博城市</span>
-              </button>
-            </div>
-            <div class="world-card" data-world="underwater-palace">
-              <div class="world-image-wrapper">
-                <img class="world-icon" src="assets/previews/preview_ocean.png" alt="海底龙宫">
-              </div>
-              <button class="enter-btn">
-                <div class="enter-icon-wrap">
-                  <img src="assets/icons/market.png" class="enter-icon" alt="图标">
-                </div>
-                <span>海底龙宫</span>
-              </button>
-            </div>
-            <div class="world-card" data-world="space-travel">
-              <div class="world-image-wrapper">
-                <img class="world-icon" src="assets/previews/preview_space.png" alt="宇宙遨游">
-              </div>
-              <button class="enter-btn">
-                <div class="enter-icon-wrap">
-                  <img src="assets/icons/festival.png" class="enter-icon" alt="图标">
-                </div>
-                <span>宇宙遨游</span>
               </button>
             </div>
             <div class="add-card-btn" onclick="createNewCard(this)">
@@ -471,17 +471,6 @@
                 <span>诗词雅集</span>
               </button>
             </div>
-            <div class="world-card" data-world="wedding-feast">
-              <div class="world-image-wrapper">
-                <img class="world-icon" src="assets/previews/preview_midautumn.jpg" alt="节日庆典">
-              </div>
-              <button class="enter-btn">
-                <div class="enter-icon-wrap">
-                  <img src="assets/icons/wedding.png" class="enter-icon" alt="图标">
-                </div>
-                <span>节日庆典</span>
-              </button>
-            </div>
             <div class="world-card" data-world="mid-autumn">
               <div class="world-image-wrapper">
                 <img class="world-icon" src="assets/previews/student.png" alt="同学聚会">
@@ -491,6 +480,17 @@
                   <img src="assets/icons/wedding.png" class="enter-icon" alt="图标">
                 </div>
                 <span>同学聚会</span>
+              </button>
+            </div>
+            <div class="world-card" data-world="wedding-feast">
+              <div class="world-image-wrapper">
+                <img class="world-icon" src="assets/previews/preview_midautumn.jpg" alt="节日庆典">
+              </div>
+              <button class="enter-btn">
+                <div class="enter-icon-wrap">
+                  <img src="assets/icons/wedding.png" class="enter-icon" alt="图标">
+                </div>
+                <span>节日庆典</span>
               </button>
             </div>
             <div class="add-card-btn" onclick="createNewCard(this)">
@@ -556,6 +556,10 @@
             window.location.href = 'wedding-page.html';
           } else if (world === 'cloud-mountain') {
             window.location.href = 'sb-page.html';
+          } else if (world === 'space-travel') {
+            window.location.href = 'huan-page.html';
+          } else if (world === 'underwater-palace') {
+            window.location.href = 'town-page.html';
           } else {
             const span = card.querySelector('span');
             if (span && span.textContent) {
