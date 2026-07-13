@@ -230,6 +230,371 @@
       content: '👥';
       font-size: 0.65rem;
     }
+
+    .game-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .game-modal.active {
+      display: flex;
+    }
+
+    .scroll-container {
+      background: linear-gradient(to bottom, #f5e6d3, #e8d5b7, #f5e6d3);
+      border-radius: 8px;
+      padding: 12px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      position: relative;
+      border: 6px solid #8b4513;
+    }
+
+    .scroll-container::before,
+    .scroll-container::after {
+      content: '';
+      position: absolute;
+      left: -15px;
+      right: -15px;
+      height: 24px;
+      background: linear-gradient(to right, #654321, #8b4513, #654321);
+      border-radius: 50%;
+    }
+
+    .scroll-container::before {
+      top: -16px;
+    }
+
+    .scroll-container::after {
+      bottom: -16px;
+    }
+
+    .game-header {
+      text-align: center;
+      margin-bottom: 10px;
+      padding-top: 2px;
+    }
+
+    .keyword-display {
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: 3rem;
+      color: #8b0000;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      letter-spacing: 8px;
+    }
+
+    .keyword-label {
+      font-size: 0.7rem;
+      color: #8b4513;
+      margin-top: 8px;
+      letter-spacing: 2px;
+    }
+
+    .participants-area {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      padding: 0 5px;
+    }
+
+    .participant-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .avatar-circle.you {
+      border-color: #ffd700;
+      box-shadow: 0 0 10px rgba(255,215,0,0.5);
+    }
+
+    .participant-name {
+      font-size: 0.65rem;
+      color: #5d4e37;
+      text-align: center;
+    }
+
+    .participant-score {
+      font-size: 0.55rem;
+      color: #8b4513;
+      font-weight: 600;
+    }
+
+    .poem-display {
+      background: rgba(255,255,255,0.6);
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 15px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: 0.95rem;
+      color: #3d3d3d;
+      line-height: 1.6;
+      border-left: 3px solid #8b4513;
+    }
+
+    .options-area {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .option-btn {
+      padding: 10px 10px;
+      background: linear-gradient(to bottom, #fff8dc, #f5deb3);
+      border: 2px solid #cd853f;
+      border-radius: 6px;
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: 0.75rem;
+      color: #5d4e37;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .option-btn:hover {
+      background: linear-gradient(to bottom, #ffd700, #daa520);
+      border-color: #b8860b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(255,215,0,0.3);
+    }
+
+    .option-btn.correct {
+      background: linear-gradient(to bottom, #90ee90, #32cd32);
+      border-color: #228b22;
+      color: #fff;
+    }
+
+    .option-btn.wrong {
+      background: linear-gradient(to bottom, #ffb6c1, #dc143c);
+      border-color: #8b0000;
+      color: #fff;
+    }
+
+    .feedback-area {
+      text-align: center;
+      min-height: 30px;
+      margin-bottom: 12px;
+    }
+
+    .feedback-text {
+      font-size: 0.9rem;
+      font-weight: bold;
+      animation: feedbackPulse 0.5s ease-out;
+    }
+
+    .feedback-text.correct {
+      color: #228b22;
+    }
+
+    .feedback-text.wrong {
+      color: #dc143c;
+    }
+
+    @keyframes feedbackPulse {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .score-display {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #8b4513;
+      margin-bottom: 12px;
+    }
+
+    .close-game-btn {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #dc143c;
+      color: #fff;
+      border: 3px solid #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+
+    .close-game-btn:hover {
+      background: #ff4444;
+      transform: scale(1.1);
+    }
+
+    .celebration-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ffd700;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .ranking-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 250;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .ranking-modal.active {
+      display: flex;
+    }
+
+    .ranking-container {
+      background: linear-gradient(to bottom, #f5e6d3, #e8d5b7);
+      border-radius: 8px;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      border: 8px solid #8b4513;
+    }
+
+    .ranking-title {
+      text-align: center;
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: 1.5rem;
+      color: #8b0000;
+      margin-bottom: 20px;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 4px;
+    }
+
+    .ranking-item.you {
+      background: rgba(255,215,0,0.3);
+      border: 2px solid #ffd700;
+    }
+
+    .rank-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 12px;
+      font-size: 0.85rem;
+    }
+
+    .rank-badge.gold {
+      background: linear-gradient(to bottom, #ffd700, #daa520);
+      color: #8b4513;
+    }
+
+    .rank-badge.silver {
+      background: linear-gradient(to bottom, #c0c0c0, #a0a0a0);
+      color: #333;
+    }
+
+    .rank-badge.bronze {
+      background: linear-gradient(to bottom, #cd7f32, #b87333);
+      color: #fff;
+    }
+
+    .rank-badge.other {
+      background: #d4c4a8;
+      color: #5d4e37;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 0.9rem;
+      color: #5d4e37;
+    }
+
+    .rank-score {
+      font-size: 0.9rem;
+      color: #8b0000;
+      font-weight: bold;
+    }
+
+    .play-again-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to bottom, #ffd700, #daa520);
+      border: 2px solid #b8860b;
+      border-radius: 6px;
+      font-size: 1rem;
+      color: #8b4513;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .play-again-btn:hover {
+      background: linear-gradient(to bottom, #ffed4a, #ffd700);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(255,215,0,0.4);
+    }
   </style>
 </head>
 <body>
@@ -250,10 +615,10 @@
           </div>
         </div>
         <div class="activity-card" data-activity="wedding-feast">
-          <img class="activity-image" src="assets/previews/preview_wedding.jpg" alt="婚礼宴请">
+          <img class="activity-image" src="assets/previews/preview_wedding.jpg" alt="绘画书法">
           <div class="activity-info">
             <div class="activity-name">
-              <span>婚礼宴请</span>
+              <span>绘画书法</span>
               <span class="activity-tag upcoming">可预约</span>
             </div>
             <div class="activity-participants">8人参与</div>
@@ -280,6 +645,30 @@
   <div class="video-container" id="video-container">
     <button class="close-video-btn" id="close-video-btn">✕</button>
     <video id="poem-video" controls autoplay></video>
+  </div>
+
+  <div class="game-modal" id="game-modal">
+    <div class="scroll-container">
+      <button class="close-game-btn" id="close-game-btn">✕</button>
+      <div class="celebration-overlay" id="celebration-overlay"></div>
+      <div class="game-header">
+        <div class="keyword-display" id="keyword-display">月</div>
+        <div class="keyword-label">当前关键字</div>
+      </div>
+      <div class="participants-area" id="participants-area"></div>
+      <div class="poem-display" id="poem-display">请选择含有关键字的诗句</div>
+      <div class="options-area" id="options-area"></div>
+      <div class="feedback-area" id="feedback-area"></div>
+      <div class="score-display" id="score-display">你的得分：0</div>
+    </div>
+  </div>
+
+  <div class="ranking-modal" id="ranking-modal">
+    <div class="ranking-container">
+      <div class="ranking-title">🏆 诗词排行榜</div>
+      <div class="ranking-list" id="ranking-list"></div>
+      <button class="play-again-btn" id="play-again-btn">再来一局</button>
+    </div>
   </div>
 
   <script>
@@ -317,6 +706,178 @@
     closeVideoBtn.addEventListener('click', closeVideo);
 
     poemVideo.addEventListener('ended', closeVideo);
+
+    const gameModal = document.getElementById('game-modal');
+    const closeGameBtn = document.getElementById('close-game-btn');
+    const keywordDisplay = document.getElementById('keyword-display');
+    const participantsArea = document.getElementById('participants-area');
+    const poemDisplay = document.getElementById('poem-display');
+    const optionsArea = document.getElementById('options-area');
+    const feedbackArea = document.getElementById('feedback-area');
+    const scoreDisplay = document.getElementById('score-display');
+    const rankingModal = document.getElementById('ranking-modal');
+    const rankingList = document.getElementById('ranking-list');
+    const playAgainBtn = document.getElementById('play-again-btn');
+
+    const poemData = [
+      { keyword: '月', correct: '举头望明月，低头思故乡', wrongs: ['春眠不觉晓，处处闻啼鸟', '白日依山尽，黄河入海流', '锄禾日当午，汗滴禾下土'] },
+      { keyword: '花', correct: '竹外桃花三两枝，春江水暖鸭先知', wrongs: ['两个黄鹂鸣翠柳，一行白鹭上青天', '千山鸟飞绝，万径人踪灭', '离离原上草，一岁一枯荣'] },
+      { keyword: '风', correct: '春风又绿江南岸，明月何时照我还', wrongs: ['床前明月光，疑是地上霜', '野火烧不尽，春风吹又生', '日照香炉生紫烟，遥看瀑布挂前川'] },
+      { keyword: '雨', correct: '好雨知时节，当春乃发生', wrongs: ['欲穷千里目，更上一层楼', '飞流直下三千尺，疑是银河落九天', '朝辞白帝彩云间，千里江陵一日还'] },
+      { keyword: '山', correct: '会当凌绝顶，一览众山小', wrongs: ['接天莲叶无穷碧，映日荷花别样红', '孤帆远影碧空尽，唯见长江天际流', '两岸猿声啼不住，轻舟已过万重山'] }
+    ];
+
+    const participants = [
+      { name: '你', avatar: 'assets/characters/scholar.png', isYou: true, score: 0 },
+      { name: '墨香公子', avatar: 'assets/characters/swordsman.png', isYou: false, score: 0 },
+      { name: '诗韵佳人', avatar: 'assets/characters/maiden.png', isYou: false, score: 0 },
+      { name: '清风居士', avatar: 'assets/characters/modern.png', isYou: false, score: 0 },
+      { name: '云中客', avatar: 'assets/characters/scholar.png', isYou: false, score: 0 }
+    ];
+
+    let currentRound = 0;
+    let playerScore = 0;
+    let isAnswering = false;
+
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+
+    function renderParticipants() {
+      participantsArea.innerHTML = '';
+      participants.forEach(p => {
+        const avatar = document.createElement('div');
+        avatar.className = 'participant-avatar';
+        avatar.innerHTML = `
+          <div class="avatar-circle ${p.isYou ? 'you' : ''}" style="background-image: url('${p.avatar}')"></div>
+          <div class="participant-name">${p.name}</div>
+          <div class="participant-score">${p.score}分</div>
+        `;
+        participantsArea.appendChild(avatar);
+      });
+    }
+
+    function renderQuestion() {
+      if (currentRound >= poemData.length) {
+        showRanking();
+        return;
+      }
+
+      const data = poemData[currentRound];
+      keywordDisplay.textContent = data.keyword;
+      poemDisplay.textContent = '请选择含有关键字的诗句';
+      feedbackArea.innerHTML = '';
+      scoreDisplay.textContent = `你的得分：${playerScore}`;
+      isAnswering = true;
+
+      const options = shuffleArray([data.correct, ...data.wrongs]);
+      optionsArea.innerHTML = '';
+
+      options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option;
+        btn.dataset.index = index;
+        btn.addEventListener('click', () => handleAnswer(btn, option === data.correct));
+        optionsArea.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, isCorrect) {
+      if (!isAnswering) return;
+      isAnswering = false;
+
+      const optionBtns = optionsArea.querySelectorAll('.option-btn');
+      optionBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btn.classList.add('correct');
+        playerScore += 10;
+        feedbackArea.innerHTML = '<div class="feedback-text correct">答对了！+10分</div>';
+        poemDisplay.textContent = poemData[currentRound].correct;
+      } else {
+        btn.classList.add('wrong');
+        feedbackArea.innerHTML = '<div class="feedback-text wrong">再想想~</div>';
+        optionBtns.forEach(b => {
+          if (b.textContent === poemData[currentRound].correct) {
+            b.classList.add('correct');
+          }
+        });
+      }
+
+      participants.forEach(p => {
+        if (!p.isYou && Math.random() > 0.4) {
+          p.score += Math.floor(Math.random() * 10) + 5;
+        }
+      });
+      participants[0].score = playerScore;
+      renderParticipants();
+
+      setTimeout(() => {
+        currentRound++;
+        renderQuestion();
+      }, 1500);
+    }
+
+    function showRanking() {
+      const sortedParticipants = [...participants].sort((a, b) => b.score - a.score);
+      rankingList.innerHTML = '';
+
+      sortedParticipants.forEach((p, index) => {
+        const rankItem = document.createElement('div');
+        rankItem.className = `ranking-item ${p.isYou ? 'you' : ''}`;
+        
+        let rankBadgeClass = 'other';
+        if (index === 0) rankBadgeClass = 'gold';
+        else if (index === 1) rankBadgeClass = 'silver';
+        else if (index === 2) rankBadgeClass = 'bronze';
+
+        rankItem.innerHTML = `
+          <div class="rank-badge ${rankBadgeClass}">${index + 1}</div>
+          <div class="rank-name">${p.name}${p.isYou ? ' (你)' : ''}</div>
+          <div class="rank-score">${p.score}分</div>
+        `;
+        rankingList.appendChild(rankItem);
+      });
+
+      rankingModal.classList.add('active');
+    }
+
+    function startGame() {
+      currentRound = 0;
+      playerScore = 0;
+      participants.forEach(p => p.score = 0);
+      participants[0].score = 0;
+      rankingModal.classList.remove('active');
+      gameModal.classList.add('active');
+      renderParticipants();
+      renderQuestion();
+    }
+
+    function closeGame() {
+      gameModal.classList.remove('active');
+      rankingModal.classList.remove('active');
+    }
+
+    document.querySelectorAll('.activity-card[data-activity="poetry-game"]').forEach(card => {
+      card.addEventListener('click', startGame);
+    });
+
+    closeGameBtn.addEventListener('click', closeGame);
+
+    playAgainBtn.addEventListener('click', () => {
+      rankingModal.classList.remove('active');
+      currentRound = 0;
+      playerScore = 0;
+      participants.forEach(p => p.score = 0);
+      renderParticipants();
+      renderQuestion();
+    });
   </script>
 </body>
 </html>
