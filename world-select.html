@@ -100,6 +100,9 @@
       z-index: 1;
       overflow-y: auto;
       padding-right: 4px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
 
     .world-select-content::-webkit-scrollbar {
@@ -414,13 +417,13 @@
           <div class="world-grid">
             <div class="world-card" data-world="cloud-mountain">
               <div class="world-image-wrapper">
-                <img class="world-icon" src="assets/previews/preview_mountain.png" alt="云端仙山">
+                <img class="world-icon" src="assets/previews/sb.png" alt="赛博城市">
               </div>
               <button class="enter-btn">
                 <div class="enter-icon-wrap">
                   <img src="assets/icons/poem.png" class="enter-icon" alt="图标">
                 </div>
-                <span>云端仙山</span>
+                <span>赛博城市</span>
               </button>
             </div>
             <div class="world-card" data-world="underwater-palace">
@@ -481,13 +484,13 @@
             </div>
             <div class="world-card" data-world="mid-autumn">
               <div class="world-image-wrapper">
-                <img class="world-icon" src="assets/previews/preview_wedding.jpg" alt="婚礼宴请">
+                <img class="world-icon" src="assets/previews/student.png" alt="同学聚会">
               </div>
               <button class="enter-btn">
                 <div class="enter-icon-wrap">
                   <img src="assets/icons/wedding.png" class="enter-icon" alt="图标">
                 </div>
-                <span>婚礼宴请</span>
+                <span>同学聚会</span>
               </button>
             </div>
             <div class="add-card-btn" onclick="createNewCard(this)">
@@ -551,6 +554,8 @@
             window.location.href = 'poem-page.html';
           } else if (world === 'mid-autumn') {
             window.location.href = 'wedding-page.html';
+          } else if (world === 'cloud-mountain') {
+            window.location.href = 'sb-page.html';
           } else {
             const span = card.querySelector('span');
             if (span && span.textContent) {
