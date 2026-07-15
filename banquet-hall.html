@@ -308,6 +308,33 @@
       box-shadow: 0 0 15px rgba(255,255,255,0.2);
     }
 
+    .fullscreen-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+
     /* 提示信息 */
     .hint {
       position: absolute;
@@ -351,6 +378,7 @@
 
     <!-- 返回按钮 -->
     <a href="world-select.html" class="back-btn">←</a>
+    <button class="fullscreen-btn" id="fullscreen-btn" title="全屏">⛶</button>
 
     <!-- 控制按钮 -->
     <div class="controls">
@@ -656,6 +684,19 @@
 
     // 页面加载完成后初始化
     document.addEventListener('DOMContentLoaded', initScene);
+
+    // === 全屏功能 ===
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('全屏失败:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
   </script>
 </body>
 </html>

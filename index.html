@@ -22,6 +22,33 @@
     html, body { width: 100%; height: 100%; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; color: var(--text); }
     body { background-image: url('assets/background/bg_create_character.png'); background-size: cover; background-position: center; background-attachment: fixed; }
 
+    .fullscreen-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 9999;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+
     #app { width: 100%; height: 100%; position: relative; }
     .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; opacity: 0; transition: opacity 0.3s ease; }
     .page.active { display: flex; opacity: 1; }
@@ -3053,6 +3080,7 @@ morn
   </style>
 </head>
 <body>
+  <button class="fullscreen-btn" id="fullscreen-btn" title="全屏">⛶</button>
   <div id="app">
     <!-- 角色创建页 -->
     <div id="create-character" class="page active">
@@ -4851,6 +4879,19 @@ morn
     }
 
     window.onload = init;
+
+    // === 全屏功能 ===
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('全屏失败:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
   </script>
 </body>
 </htm

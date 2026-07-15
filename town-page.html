@@ -154,6 +154,33 @@
       box-shadow: 0 0 15px rgba(255,255,255,0.2);
     }
 
+    .fullscreen-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+
     /* 虚拟摇杆 */
     .joystick-wrapper {
       position: fixed;
@@ -208,6 +235,7 @@
 <body>
   <div class="page-overlay"></div>
   <a href="world-select.html" class="back-btn">←</a>
+  <button class="fullscreen-btn" id="fullscreen-btn" title="全屏">⛶</button>
   <div class="page-content">
     <h1 class="page-title">长安繁华</h1>
     <p class="page-subtitle">漫步千年古都，感受盛世繁华</p>
@@ -235,6 +263,7 @@
     const videoOverlay = document.getElementById('video-overlay');
     const sceneVideo = document.getElementById('scene-video');
     const closeBtn = document.getElementById('close-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
     let hasStarted = false;
 
     function startScene() {
@@ -338,6 +367,19 @@
       }
     });
     observer.observe(videoOverlay, { attributes: true, attributeFilter: ['class'] });
+
+    // === 全屏功能 ===
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('全屏失败:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
   </script>
 </body>
 </html>

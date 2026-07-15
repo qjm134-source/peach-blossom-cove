@@ -121,6 +121,33 @@
       box-shadow: 0 0 15px rgba(255,255,255,0.2);
     }
 
+    .fullscreen-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+
     .current-activities {
       position: absolute;
       top: 60px;
@@ -236,6 +263,7 @@
   <div id="wedding-page">
     <div class="wedding-overlay"></div>
     <a href="world-select.html" class="back-btn">←</a>
+    <button class="fullscreen-btn" id="fullscreen-btn" title="全屏">⛶</button>
     <div class="current-activities">
       <h3 class="activities-title">当前活动</h3>
       <div class="activities-grid">
@@ -283,6 +311,7 @@
     const videoContainer = document.getElementById('video-container');
     const weddingVideo = document.getElementById('wedding-video');
     const closeVideoBtn = document.getElementById('close-video-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
 
     function startWedding() {
       videoContainer.classList.add('active');
@@ -328,6 +357,19 @@
         }
       });
     });
+
+    // === 全屏功能 ===
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('全屏失败:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
   </script>
 </body>
 </html>

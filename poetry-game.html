@@ -576,9 +576,9 @@
     ];
 
     const participants = [
-      { name: '你', avatar: 'assets/characters/scholar.png', isYou: true, score: 0 },
       { name: '墨香公子', avatar: 'assets/characters/swordsman.png', isYou: false, score: 0 },
       { name: '诗韵佳人', avatar: 'assets/characters/maiden.png', isYou: false, score: 0 },
+      { name: '你', avatar: 'assets/characters/scholar.png', isYou: true, score: 0 },
       { name: '清风居士', avatar: 'assets/characters/modern.png', isYou: false, score: 0 },
       { name: '云中客', avatar: 'assets/characters/scholar.png', isYou: false, score: 0 }
     ];
@@ -698,7 +698,8 @@
           p.score += Math.floor(Math.random() * 10) + 5;
         }
       });
-      participants[0].score = playerScore;
+      const player = participants.find(p => p.isYou);
+      if (player) player.score = playerScore;
       renderParticipants();
 
       const bubble = document.getElementById('bubble-you');
