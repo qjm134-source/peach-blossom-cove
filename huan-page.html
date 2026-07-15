@@ -153,6 +153,67 @@
       transform: scale(1.1);
       box-shadow: 0 0 15px rgba(255,255,255,0.2);
     }
+
+    /* 虚拟摇杆 */
+    .joystick-wrapper {
+      position: fixed;
+      bottom: 40px;
+      left: 20px;
+      z-index: 50;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .joystick-base {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,215,0,0.3);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+
+    .joystick-base.active {
+      border-color: rgba(255,215,0,0.7);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .joystick-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), rgba(255,215,0,0.4));
+      border: 1px solid rgba(255,215,0,0.5);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out;
+      pointer-events: none;
+    }
+
+    .joystick-base.active .joystick-thumb {
+      transition: none;
+    }
+
+    .joystick-label {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -161,7 +222,15 @@
   <div class="page-content">
     <h1 class="page-title">异域幻境</h1>
     <p class="page-subtitle">探索神秘的异域世界</p>
-    <div class="start-hint">按下 WASD 或方向键开始体验</div>
+    <div class="start-hint">按下 WASD / 方向键 或滑动摇杆开始体验</div>
+  </div>
+
+  <!-- 虚拟摇杆 -->
+  <div class="joystick-wrapper" id="joystick-wrapper">
+    <div class="joystick-base" id="joystick-base">
+      <div class="joystick-thumb" id="joystick-thumb"></div>
+      <span class="joystick-label">滑动移动</span>
+    </div>
   </div>
 
   <div class="video-overlay" id="video-overlay">
@@ -212,6 +281,83 @@
       }
       hasStarted = false;
     });
+
+    // === 虚拟摇杆 ===
+    const joystickBase = document.getElementById('joystick-base');
+    const joystickThumb = document.getElementById('joystick-thumb');
+    const joyCenter = { x: 0, y: 0 };
+    const maxRadius = 18; // 摇杆最大移动半径
+    const triggerThreshold = 8; // 触发场景的拖动阈值
+    let joyActive = false;
+    let joyTriggered = false;
+
+    function getPoint(e) {
+      if (e.touches && e.touches.length > 0) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function joyStart(e) {
+      e.preventDefault();
+      joyActive = true;
+      joyTriggered = false;
+      const rect = joystickBase.getBoundingClientRect();
+      joyCenter.x = rect.left + rect.width / 2;
+      joyCenter.y = rect.top + rect.height / 2;
+      joystickBase.classList.add('active');
+    }
+
+    function joyMove(e) {
+      if (!joyActive) return;
+      e.preventDefault();
+      const pt = getPoint(e);
+      let dx = pt.x - joyCenter.x;
+      let dy = pt.y - joyCenter.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // 限制在最大半径内
+      if (dist > maxRadius) {
+        dx = (dx / dist) * maxRadius;
+        dy = (dy / dist) * maxRadius;
+      }
+      joystickThumb.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+      // 拖动超过阈值触发场景
+      if (dist > triggerThreshold && !joyTriggered) {
+        joyTriggered = true;
+        startScene();
+      }
+    }
+
+    function joyEnd(e) {
+      if (!joyActive) return;
+      e.preventDefault();
+      joyActive = false;
+      joystickBase.classList.remove('active');
+      // 回弹到中心
+      joystickThumb.style.transform = 'translate(-50%, -50%)';
+    }
+
+    // 触摸事件
+    joystickBase.addEventListener('touchstart', joyStart, { passive: false });
+    document.addEventListener('touchmove', joyMove, { passive: false });
+    document.addEventListener('touchend', joyEnd, { passive: false });
+    document.addEventListener('touchcancel', joyEnd, { passive: false });
+
+    // 鼠标事件（桌面端也能用）
+    joystickBase.addEventListener('mousedown', joyStart);
+    document.addEventListener('mousemove', joyMove);
+    document.addEventListener('mouseup', joyEnd);
+
+    // 视频播放后隐藏摇杆
+    const observer = new MutationObserver(() => {
+      if (videoOverlay.classList.contains('active')) {
+        document.getElementById('joystick-wrapper').style.display = 'none';
+      } else {
+        document.getElementById('joystick-wrapper').style.display = '';
+      }
+    });
+    observer.observe(videoOverlay, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
 </html>
