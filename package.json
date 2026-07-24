@@ -1,5 +1,34 @@
 {
-  "dependencies": {
-    "ws": "^8.21.0"
-  }
+  "name": "peach-blossom-cove",
+  "version": "1.0.0",
+  "description": "幻境漫游 WonderRealm - 古风沉浸式虚拟世界全栈项目",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start --workspace=apps/server",
+    "lint": "echo 'Linting not configured yet'",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "wonderrealm",
+    "vr",
+    "immersive",
+    "ancient-style",
+    "websocket",
+    "multiplayer"
+  ],
+  "author": "",
+  "license": "MIT"
 }

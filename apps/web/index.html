@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>幻境漫游 WonderRealm</title>
+  <!-- 公共样式 -->
+  <link rel="stylesheet" href="/src/styles/base.css">
+  <link rel="stylesheet" href="/src/styles/components.css">
+  <!-- 页面特有样式将在构建时由Vite处理 -->
+</head>
+<body>
+  <div id="app">
+    <!-- 页面内容由JS动态加载，或在此处放置各page -->
+    <div id="create-character" class="page active">
+      <!-- 角色创建页内容区 -->
+      <div class="page-content" style="background: url('/assets/background/bg_create_character.png') center/cover no-repeat fixed;">
+        <div class="page-overlay"></div>
+        <div class="content-wrapper">
+          <h1 class="main-title">幻境漫游</h1>
+          <p class="subtitle">WonderRealm</p>
+          <div class="action-buttons">
+            <a href="/src/pages/world-select.html" class="btn-primary">开始旅程</a>
+            <button class="btn-secondary" id="btn-settings">设置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全屏按钮 -->
+  <button class="fullscreen-btn" id="fullscreen-btn" title="全屏">⛶</button>
+
+  <!-- 公共脚本 -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

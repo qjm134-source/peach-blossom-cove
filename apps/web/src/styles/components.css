@@ -1,0 +1,308 @@
+/* ============================================
+   公共UI组件样式
+   ============================================ */
+
+/* ---------- 圆形按钮基础 ---------- */
+.btn-circle {
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+}
+
+.btn-circle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- 返回按钮 ---------- */
+.back-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  z-index: 100;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- 全屏按钮 ---------- */
+.fullscreen-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  z-index: 100;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+/* ---------- 关闭按钮 ---------- */
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 101;
+  transition: all var(--transition-normal);
+}
+
+.close-btn:hover {
+  background: rgba(255, 0, 0, 0.5);
+  border-color: #fff;
+}
+
+/* ---------- 视频覆盖层 ---------- */
+.video-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-overlay.active {
+  display: flex;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---------- 虚拟摇杆 ---------- */
+.joystick-wrapper {
+  position: fixed;
+  bottom: 40px;
+  left: 20px;
+  z-index: 50;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.joystick-base {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--gold-dim);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition-fast);
+}
+
+.joystick-base.active {
+  border-color: rgba(255, 215, 0, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.joystick-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.7), rgba(255, 215, 0, 0.4));
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease-out;
+  pointer-events: none;
+}
+
+.joystick-base.active .joystick-thumb {
+  transition: none;
+}
+
+.joystick-label {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- 页面内容区 ---------- */
+.page-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  z-index: 1;
+}
+
+.page-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #fff;
+  text-align: center;
+}
+
+/* ---------- 活动卡片 ---------- */
+.activities-grid {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.activities-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.activity-card {
+  flex: 0 0 calc(33.33% - 7px);
+  max-width: 160px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--gold-dim);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15);
+}
+
+.activity-image {
+  width: 100%;
+  height: 65px;
+  object-fit: cover;
+}
+
+.activity-info {
+  padding: 6px 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.activity-name {
+  font-size: 0.7rem;
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-tag {
+  font-size: 0.45rem;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.activity-tag.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+}
+
+.activity-tag.upcoming {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+}
+
+.activity-participants {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.activity-participants::before {
+  content: '\ud83d\udc65';
+  font-size: 0.6rem;
+}

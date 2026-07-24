@@ -1,0 +1,73 @@
+.world-select-page {
+  min-height: 100vh;
+  background: url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chinese%20ancient%20mystical%20portal%20with%20glowing%20magic%20circles&image_size=landscape_16_9') center/cover no-repeat;
+  position: relative;
+  padding: 40px 20px;
+}
+
+.bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.world-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.world-card {
+  background: rgba(17, 24, 39, 0.8);
+  border-radius: 20px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.card-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.icon-text {
+  font-size: 40px;
+}
+
+.card-name {
+  font-size: 28px;
+  color: #fff;
+  font-weight: 600;
+}

@@ -1,0 +1,53 @@
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #1a1a3e;
+  --bg-card: rgba(17, 24, 39, 0.85);
+  --accent: #f59e0b;
+  --gold: #ffd700;
+  --gold-light: rgba(255, 215, 0, 0.5);
+  --text: #e8ecf4;
+  --text-muted: #8892a8;
+}
+
+page {
+  background-color: var(--bg-primary);
+  color: var(--text);
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 16px 40px;
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 30px;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 16px 40px;
+  font-size: 28px;
+  margin-top: 20px;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 16px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}

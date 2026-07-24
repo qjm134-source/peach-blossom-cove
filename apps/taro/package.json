@@ -1,0 +1,29 @@
+{
+  "name": "@wonderrealm/taro",
+  "version": "1.0.0",
+  "description": "幻境漫游 Taro 小程序",
+  "private": true,
+  "scripts": {
+    "dev:weapp": "npx taro build --type weapp --watch",
+    "build:weapp": "npx taro build --type weapp",
+    "dev:h5": "npx taro build --type h5 --watch",
+    "build:h5": "npx taro build --type h5"
+  },
+  "dependencies": {
+    "@tarojs/components": "3.6.20",
+    "@tarojs/runtime": "3.6.20",
+    "@tarojs/taro": "3.6.20",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tarojs/cli": "^4.2.1",
+    "@tarojs/mini-runner": "3.6.20",
+    "@tarojs/webpack-runner": "3.6.20",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "vue-template-compiler": "^2.7.0"
+  }
+}

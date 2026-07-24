@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>异域幻境 - 幻境漫游</title>
+  <!-- 公共样式 -->
+  <link rel="stylesheet" href="/src/styles/base.css">
+  <link rel="stylesheet" href="/src/styles/components.css">
+  <!-- 页面专属样式 -->
+  <link rel="stylesheet" href="/src/styles/pages/huan-page.css">
+</head>
+<body>
+  <div class="page-overlay"></div>
+
+  <!-- 导航按钮 -->
+  <a href="/src/pages/world-select.html" class="back-btn" title="返回">←</a>
+  <button class="fullscreen-btn" id="fullscreen-btn" title="全屏">⛶</button>
+
+  <!-- 页面内容 -->
+  <div class="page-content">
+    <h1 class="page-title">异域幻境</h1>
+    <p class="page-subtitle">探索神秘的异域世界</p>
+    <div class="start-hint">按下 WASD / 方向键 或滑动摇杆开始体验</div>
+  </div>
+
+  <!-- 虚拟摇杆 -->
+  <div class="joystick-wrapper" id="joystick-wrapper">
+    <div class="joystick-base" id="joystick-base">
+      <div class="joystick-thumb" id="joystick-thumb"></div>
+      <span class="joystick-label">滑动移动</span>
+    </div>
+  </div>
+
+  <!-- 视频覆盖层 -->
+  <div class="video-overlay" id="video-overlay">
+    <button class="close-btn" id="close-btn" title="关闭">✕</button>
+    <div class="video-container">
+      <video id="scene-video" controls autoplay playsinline>
+        <source src="/assets/scene/huan.mp4" type="video/mp4">
+        您的浏览器不支持视频播放
+      </video>
+    </div>
+  </div>
+
+  <!-- 页面专属脚本（ES Module） -->
+  <script type="module" src="/src/scripts/pages/huan-page.js"></script>
+</body>
+</html>
